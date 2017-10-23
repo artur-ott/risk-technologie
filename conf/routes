@@ -11,4 +11,4 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # Risk information
 GET     /risk/story                 controllers.GeneralController.story
 
-GET     /                           controllers.RiskController.index
+GET     /                           controllers.GeneralController.index
