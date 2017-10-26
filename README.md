@@ -1,10 +1,9 @@
-
 # CI Status 
 
 | Branch      |  Status  |
 | ----------  | -------- |
-| development | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=development)](https://github.com/artur-ott/risk-technologie/tree/dev) |
-| master      | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=master)](https://github.com/artur-ott/risk-technologie/tree/master)
+| development | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=dev)](https://github.com/artur-ott/risk-technologie/tree/dev) |
+| master      | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=master)](https://github.com/artur-ott/risk-technologie/tree/master) |
 
 # play-scala-starter-example
 

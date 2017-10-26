@@ -4,6 +4,8 @@ import javax.inject._
 
 import play.api.mvc._
 
+import de.htwg.se.scala_risk.model.impl._
+
 /**
  * This controller demonstrates how to use dependency injection to
  * bind a component into a controller class. The class creates an
@@ -20,6 +22,10 @@ class GeneralController @Inject() (cc: ControllerComponents) extends AbstractCon
    */
   def story = Action {
       Ok(views.html.general.story())
+      }
+
+  def index = Action {
+      Ok(Colors.RED.toString)
       }
   
 }
