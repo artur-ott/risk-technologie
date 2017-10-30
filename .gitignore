@@ -1,0 +1,7 @@
+.idea/
+.vs/
+logs/
+project/project/
+project/target/
+target/
+#.gitignore
