@@ -4,7 +4,7 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
-@(title: String)(content: Html)
+@(title: String, additionalCss: Html = Html(""))(content: Html)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +12,8 @@
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/main.css")">
+        @additionalCss
     </head>
     <body>
         @* And here's where we render the `Html` object containing

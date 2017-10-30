@@ -25,7 +25,7 @@ class GeneralController @Inject() (cc: ControllerComponents) extends AbstractCon
       }
 
   def index = Action {
-      Ok(Colors.RED.toString)
+      Ok("<h1 style=\"color: #f00;\">" + Colors.RED.toString + "</h1>").as(HTML)
       }
   
 }
