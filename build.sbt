@@ -1,4 +1,4 @@
-name := """play-scala-starter-example"""
+name := """scala-risk-webview"""
 
 version := "1.0-SNAPSHOT"
 
