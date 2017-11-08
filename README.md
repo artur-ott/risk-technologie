@@ -3,6 +3,7 @@
 
 | Branch      |  Status  |
 | ----------  | -------- |
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/214b170b8d5447e8bfeab61a3fc1203e)](https://www.codacy.com/app/artur-ott/risk-technologie?utm_source=github.com&utm_medium=referral&utm_content=artur-ott/risk-technologie&utm_campaign=badger)
 | development | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=development)](https://github.com/artur-ott/risk-technologie/tree/development) |
 | master      | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=master)](https://github.com/artur-ott/risk-technologie/tree/master)
 
