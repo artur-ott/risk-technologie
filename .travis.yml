@@ -7,3 +7,6 @@ jdk:
 
 script:
 - sbt clean compile
+
+notifications:
+  slack: artursslack:0G4l3ExOKbGYmINqBi7GOozR
