@@ -10,3 +10,6 @@ script:
 
 notifications:
   slack: artursslack:0G4l3ExOKbGYmINqBi7GOozR
+    on_success: never # default: change
+    on_failure: always # default: always
+  email: false
