@@ -1,11 +1,10 @@
-
 # CI Status 
 
 | Branch      |  Status  |
 | ----------  | -------- |
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/214b170b8d5447e8bfeab61a3fc1203e)](https://www.codacy.com/app/artur-ott/risk-technologie?utm_source=github.com&utm_medium=referral&utm_content=artur-ott/risk-technologie&utm_campaign=badger)
-| development | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=development)](https://github.com/artur-ott/risk-technologie/tree/development) |
-| master      | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=master)](https://github.com/artur-ott/risk-technologie/tree/master)
+| development | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=dev)](https://github.com/artur-ott/risk-technologie/tree/dev) |
+| master      | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=master)](https://github.com/artur-ott/risk-technologie/tree/master) |
+| codacy |[![Codacy Badge](https://api.codacy.com/project/badge/Grade/214b170b8d5447e8bfeab61a3fc1203e)](https://www.codacy.com/app/artur-ott/risk-technologie?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=artur-ott/risk-technologie&amp;utm_campaign=Badge_Grade) |
 
 # play-scala-starter-example
 
