@@ -6,7 +6,6 @@
 | master      | [![build status](https://travis-ci.org/artur-ott/risk-technologie.svg?branch=master)](https://github.com/artur-ott/risk-technologie/tree/master) |
 | codacy |[![Codacy Badge](https://api.codacy.com/project/badge/Grade/214b170b8d5447e8bfeab61a3fc1203e)](https://www.codacy.com/app/artur-ott/risk-technologie?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=artur-ott/risk-technologie&amp;utm_campaign=Badge_Grade) |
 
-
 # play-scala-starter-example
 
 This is a starter application that shows how Play works.  Please see the documentation at https://www.playframework.com/documentation/latest/Home for more details.
