@@ -1,35 +1,86 @@
 
 @main("Description") {
-<h1>Risiko</h1>
-    <h2>Allgemeines</h2>
-    <p>Risiko ist ein von dem französischen Filmregisseur Albert Lamorisse erfundenes Brettspiel,
-        das kriegerische Konflikte zwischen Ländern auf abstraktem Niveau simuliert.
-        Es gilt als ein Klassiker unter den Strategiespielen und ist eines der weltweit bekanntesten Brettspiele.
-        Es wurde in zahlreiche Sprachen übersetzt und wird in den meisten Ländern trotz der starken Konkurrenz durch
-        neuere Spiele auch noch 60 Jahre nach seiner Ersterscheinung aufgelegt.
-        Die Fülle von Nachahmungen und Erweiterungen zeigt die prägende Rolle des Spiels für das Genre der <a href="https://www.gesellschaftsspiele.de/brettspiele/">Brettspiele</a>.</p>
-        
-        Trotz des primären Themas Krieg ist Risiko kein typisches Konfliktsimulationsspiel, das seinen Schwerpunkt auf Realitätsnähe oder anspruchsvolle taktische Herausforderungen legt.
-        Stattdessen ähnelt Risiko den heutigen Autorenspielen, die einfache strategische Entscheidungen, diplomatisches Handeln und Glück in den Vordergrund stellen.
-<h2>Geschichte</h2>
-    Risiko wurde Anfang der 1950er Jahre von dem französischen Filmregisseur <a href="https://de.wikipedia.org/wiki/Albert_Lamorisse">Albert Lamorisse</a> erfunden.
-    Die erste Version hat vermutlich 1955 der Autor selbst herausgegeben.
-    1957 veröffentlichte die Miro Company es unter dem Titel La Conquête du Monde (Die Eroberung der Welt).
-    Danach wurde es von dem Spieleentwickler und Bridge-Experten Jean-René Vernes spielbarer gemacht und erhielt den Namen Risk (Risiko).
-    1959 erschien die erste US-amerikanische Version im Hause Parker.
-    1961 brachte Schmidt Spiele die erste deutsche Version heraus.
-    In den 1970er Jahren brachte dann auch Parker eine deutsche Version heraus. Sowohl Miro Company als auch Parker Brothers sind heute im Besitz von Hasbro.
-    Wegen der militaristischen Ausdrucksweise, in der die Spielbeschreibung der ersten Spielversion in Deutschland gehalten war,
-    sollte das Spiel 1982 indiziert werden. Erst eine gerichtliche Auseinandersetzung wandte dieses ab.
-    Als Konsequenz änderte der Hersteller die Formulierungen der Spielbeschreibung und Anleitung ab.
-    War in älteren Versionen noch vom „Erobern“ bestimmter Gebiete und „Vernichten“ der Gegner die Rede, werden in neueren Versionen Gebiete „befreit“
-    und die gegnerischen Armeen „aufgelöst“. Ferner werden Angriff und Verteidigung als „diplomatische Verhandlungen“ beschrieben.
-<h2>Das Spiel</h2>
-    <h3>Beschreibung</h3>
-    Die Weltkarte des Risikospiels besteht aus den sechs Kontinenten Nordamerika, Südamerika, Europa, Afrika, Asien und Australien.
-    Auf diese sind 42 Gebiete verteilt, die entweder nach geographischer Lage (z. B. Südeuropa), nach Regionen (z. B. Kamtschatka) oder realen Staaten (z. B. Großbritannien) benannt sind.
-    Zwei bis sechs Spieler versuchen, abwechselnd Gebiete und Kontinente in ihren Besitz zu bringen. Ziel des Spiels ist es, je nach Auftrag einen oder mehrere Kontinente, eine bestimmte Anzahl
-    von Gebieten oder die ganze Welt zu erobern oder einen bestimmten Gegner komplett zu vernichten. Die Spieler entscheiden dabei nach strategischen Gesichtspunkten über die Platzierung und den Einsatz ihrer Armeen.
-    Für den Erfolg der Schlachten ist die Größe der Armeen und das Würfelglück bestimmend.
-    <p>Quelle: <a href="https://de.wikipedia.org/wiki/Risiko_(Spiel)">Wikipedia</a> </p>
+
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <title>Risk Technologie- Spielbeschreibung</title>
+                <!-- Required meta tags -->
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+                <!-- Bootstrap CSS -->
+            <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/account/index.css")"> <!-- our css -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        </head>
+        <body>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Navigation
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="http://localhost:9000/">Index</a>
+                                <a class="dropdown-item" href="http://localhost:9000/risk/game/rules">Spielregeln</a>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <nav class="navbar navbar-light bg-light">
+                        <span class="navbar-text">
+                            <div class="mx-auto" style="width: 2000px;">
+                                Risk Technologie - Das Spiel
+                            </div>
+                        </span>
+                    </nav>
+
+                </div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+
+
+            <h1>Risiko</h1>
+            <h2>Allgemeines</h2>
+            <p>Risiko ist ein von dem französischen Filmregisseur Albert Lamorisse erfundenes Brettspiel,
+                das kriegerische Konflikte zwischen Ländern auf abstraktem Niveau simuliert.
+                Es gilt als ein Klassiker unter den Strategiespielen und ist eines der weltweit bekanntesten Brettspiele.
+                Es wurde in zahlreiche Sprachen übersetzt und wird in den meisten Ländern trotz der starken Konkurrenz durch
+                neuere Spiele auch noch 60 Jahre nach seiner Ersterscheinung aufgelegt.
+                Die Fülle von Nachahmungen und Erweiterungen zeigt die prägende Rolle des Spiels für das Genre der <a href="https://www.gesellschaftsspiele.de/brettspiele/">Brettspiele</a>.</p>
+
+            Trotz des primären Themas Krieg ist Risiko kein typisches Konfliktsimulationsspiel, das seinen Schwerpunkt auf Realitätsnähe oder anspruchsvolle taktische Herausforderungen legt.
+            Stattdessen ähnelt Risiko den heutigen Autorenspielen, die einfache strategische Entscheidungen, diplomatisches Handeln und Glück in den Vordergrund stellen.
+            <h2>Geschichte</h2>
+            Risiko wurde Anfang der 1950er Jahre von dem französischen Filmregisseur <a href="https://de.wikipedia.org/wiki/Albert_Lamorisse">Albert Lamorisse</a> erfunden.
+            Die erste Version hat vermutlich 1955 der Autor selbst herausgegeben.
+            1957 veröffentlichte die Miro Company es unter dem Titel La Conquête du Monde (Die Eroberung der Welt).
+            Danach wurde es von dem Spieleentwickler und Bridge-Experten Jean-René Vernes spielbarer gemacht und erhielt den Namen Risk (Risiko).
+            1959 erschien die erste US-amerikanische Version im Hause Parker.
+            1961 brachte Schmidt Spiele die erste deutsche Version heraus.
+            In den 1970er Jahren brachte dann auch Parker eine deutsche Version heraus. Sowohl Miro Company als auch Parker Brothers sind heute im Besitz von Hasbro.
+            Wegen der militaristischen Ausdrucksweise, in der die Spielbeschreibung der ersten Spielversion in Deutschland gehalten war,
+            sollte das Spiel 1982 indiziert werden. Erst eine gerichtliche Auseinandersetzung wandte dieses ab.
+            Als Konsequenz änderte der Hersteller die Formulierungen der Spielbeschreibung und Anleitung ab.
+            War in älteren Versionen noch vom „Erobern“ bestimmter Gebiete und „Vernichten“ der Gegner die Rede, werden in neueren Versionen Gebiete „befreit“
+            und die gegnerischen Armeen „aufgelöst“. Ferner werden Angriff und Verteidigung als „diplomatische Verhandlungen“ beschrieben.
+            <h2>Das Spiel</h2>
+            <h3>Beschreibung</h3>
+            Die Weltkarte des Risikospiels besteht aus den sechs Kontinenten Nordamerika, Südamerika, Europa, Afrika, Asien und Australien.
+            Auf diese sind 42 Gebiete verteilt, die entweder nach geographischer Lage (z. B. Südeuropa), nach Regionen (z. B. Kamtschatka) oder realen Staaten (z. B. Großbritannien) benannt sind.
+            Zwei bis sechs Spieler versuchen, abwechselnd Gebiete und Kontinente in ihren Besitz zu bringen. Ziel des Spiels ist es, je nach Auftrag einen oder mehrere Kontinente, eine bestimmte Anzahl
+            von Gebieten oder die ganze Welt zu erobern oder einen bestimmten Gegner komplett zu vernichten. Die Spieler entscheiden dabei nach strategischen Gesichtspunkten über die Platzierung und den Einsatz ihrer Armeen.
+            Für den Erfolg der Schlachten ist die Größe der Armeen und das Würfelglück bestimmend.
+            <p>Quelle: <a href="https://de.wikipedia.org/wiki/Risiko_(Spiel)">Wikipedia</a> </p>
+
+                <!-- Optional JavaScript -->
+                <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+        </body>
+    </html>
 }
