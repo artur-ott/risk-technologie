@@ -20,9 +20,6 @@ class GeneralController @Inject() (cc: ControllerComponents) extends AbstractCon
    * count. The result is plain text. This `Action` is mapped to
    * `GET /count` requests by an entry in the `routes` config file.
    */
-  def story = Action {
-      Ok(views.html.general.story())
-      }
 
   def index = Action {
       Ok(Colors.RED.toString)
@@ -31,5 +28,12 @@ class GeneralController @Inject() (cc: ControllerComponents) extends AbstractCon
   def game = Action {
     Ok(views.html.general.game())
   }
-  
+
+  def description = Action {
+    Ok(views.html.game.description())
+  }
+
+  def rules = Action {
+    Ok(views.html.game.rules())
+  }
 }
