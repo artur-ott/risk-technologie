@@ -12,3 +12,5 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /risk/story                 controllers.GeneralController.story
 
 GET     /                           controllers.GeneralController.index
+
+GET     /risk/game                  controllers.GeneralController.game
