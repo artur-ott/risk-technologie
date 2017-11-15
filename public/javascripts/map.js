@@ -1,4 +1,4 @@
-var map = {
+var map_refrences = {
     min_max: {
         "WESTEUROPA": {
             "min": {
