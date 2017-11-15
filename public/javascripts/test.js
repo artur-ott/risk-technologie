@@ -5,10 +5,12 @@ $(document).ready(function() {
 function onLoadImg() {
     let white = $('#map_white')[0];
     let ctxWhite = white.getContext("2d");
+    ctxWhite.scale(0.5, 0.5);
     ctxWhite.drawImage($('#map')[0], 0, 0, 1650, 1080);
 
     let canvas = $('#reference')[0];
     let ctxRef = canvas.getContext("2d");
+    ctxRef.scale(0.5, 0.5);
     ctxRef.drawImage($('#ref')[0], 0, 0, 1650, 1080);
     canvas.onload = canvasLoaded();
 
