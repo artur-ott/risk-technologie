@@ -1,5 +1,5 @@
 var map_refrences = {
-    min_max: {
+    bounds: {
         "WESTEUROPA": {
             "min": {
                 "y": "389",
@@ -423,9 +423,9 @@ var map_refrences = {
     },
     colors: {
         "ARGENTINIEN": [
-            255,
-            255,
-            255
+            254,
+            254,
+            254
         ],
         "GROSSBRITANNIEN": [
             250,

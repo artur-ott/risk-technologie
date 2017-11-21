@@ -1,6 +1,10 @@
 @main("Map") {
-    <img id="map" style="display:none" src="@routes.Assets.versioned("images/map_white.png")" />
+    @*<img id="map" style="display:none" src="@routes.Assets.versioned("images/map_white.png")" />
     <img id="ref" style="display:none" src="@routes.Assets.versioned("images/map_ref_new.png")" />
-    <canvas id="map_white" width="825" height="540"></canvas>
-    <canvas id="reference" style="display:none" width="825" height="540"></canvas>
+    <!--canvas id="map_white" width="825" height="540"></canvas>
+    <canvas id="reference" style="display:none" width="825" height="540"></canvas-->
+    <canvas id="map_white" width="1650" height="1080"></canvas>
+    <canvas id="reference" style="display:none" width="1650" height="1080"></canvas>*@
+    <canvas id="map" data-map="@routes.Assets.versioned("images/map_white.png")"
+        data-ref="@routes.Assets.versioned("images/map_ref_new.png")"></canvas>
 }
