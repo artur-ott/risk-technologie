@@ -1,75 +1,128 @@
-var map_;
+let map_node;
+let map_background;
+let map_reference;
+let map_width;
+let map_height;
+let map_scale;
+let map_ctx_map;
+let map_ref;
+let map_ctx_ref;
+let map_img_map;
+let map_img_ref;
+let map_img_loaded = 0;
+let map_data = {};
+
 $(document).ready(function() {
-    //$('#ref')[0].onload = onLoadImg;
-    map_ = new MapComponent($("#map")[0], 1650, 1080, 0.5);
+    _map_init($("#map")[0], 1650, 1080, 0.5);
 });
 
-function onLoadImg() {
-    let white = $('#map_white')[0];
-    let ctxWhite = white.getContext("2d");
-    // ctxWhite.scale(0.5, 0.5);
-    ctxWhite.drawImage($('#map')[0], 0, 0, 1650, 1080);
+function _map_init(node, width=1650, height=1080, scale=1.0) {
+    if (typeof map_refrences === "undefined") return;
+    map_node = node;
+    map_node.onclick = map_click;
+    if (!node.hasAttribute("data-map") || !node.hasAttribute("data-ref")) return;
+    map_background = node.getAttribute("data-map");
+    map_reference = node.getAttribute("data-ref");
+    map_width = width;
+    map_height = height;
+    map_scale = scale;
+    Object.keys(map_refrences.colors).forEach(function(name) {
+        map_data[name] = [255, 255, 255];//map_refrences.colors[name];
+    });
+    map_load_();
+}
 
-    let canvas = $('#reference')[0];
-    let ctxRef = canvas.getContext("2d");
-    // ctxRef.scale(0.5, 0.5);
-    ctxRef.drawImage($('#ref')[0], 0, 0, 1650, 1080);
-    canvas.onload = canvasLoaded();
+function map_load_() {
+    map_node.setAttribute("width", map_width * map_scale);
+    map_node.setAttribute("height", map_height * map_scale);
+    map_ctx_map = map_node.getContext("2d");
+    map_ctx_map.scale(map_scale, map_scale);
 
-    function canvasLoaded() {
-        $(white).click(onClickImg);
-        $(white).mousemove(function(e) {hover(e)});
-    }
+    map_ref = document.createElement("canvas");
+    map_ref.setAttribute("width", map_width * map_scale);
+    map_ref.setAttribute("height", map_height * map_scale);
+    map_ctx_ref = map_ref.getContext("2d");
+    map_ctx_ref.scale(map_scale, map_scale);
 
-    function onClickImg(e) {
-        var rect = white.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
-        console.log("X: " + x + " Y: " + y + " Color: " + JSON.stringify(ctxRef.getImageData(x, y, 1, 1)));
-    }
+    map_img_map = document.createElement("img");
+    map_img_ref = document.createElement("img");
+    map_img_map.onload = map_load_img;
+    map_img_ref.onload = map_load_img;
+    map_img_map.src = map_background;
+    map_img_ref.src = map_reference;
+}
 
-    function hover(e) {
-        var rect = white.getBoundingClientRect();
-        let x = e.clientX - rect.left;
-        let y = e.clientY - rect.top;
-        let data = ctxRef.getImageData(x, y, 1, 1).data;
-        setPixelsinArea(ctxRef, ctxWhite, data, [123, 232, 12]);
+function map_load_img() {
+    if (map_img_loaded == 1) {
+        map_draw();
+        delete map_img_loaded;
+    } else {
+        map_img_loaded++;
     }
 }
 
-function setPixelsinArea(ctxRef, ctxDraw, targetColorArray, newColor) {
-    let land = getLandFromPixel(targetColorArray);
-    if (land.length === 0) return;
-    /*
-        TODO: needs to be scaled
-    */
-    let bounds = map_refrences.bounds[land];
-    let width = bounds.max.x - bounds.min.x;
-    let height = bounds.max.y - bounds.min.y;
-    let dataRef = ctxRef.getImageData(bounds.min.x, bounds.min.y, width, height).data;
-    let dataDraw = ctxDraw.getImageData(bounds.min.x, bounds.min.y, width, height).data;
-    for (let i = dataRef.indexOf(targetColorArray[0]); i < dataRef.length && i !== -1; i += 4){
-        if (targetColorArray[0] === dataRef[i] && targetColorArray[1] === dataRef[i + 1] &&
-            targetColorArray[2] === dataRef[i + 2]) {
+function map_scale_map(scale_factor) {
+    map_scale = scale_factor;
+    map_node.setAttribute("width", map_width * map_scale);
+    map_node.setAttribute("height", map_height * map_scale);
+    map_ctx_map = map_node.getContext("2d");
+    map_ctx_map.scale(map_scale, map_scale);
+
+    map_ref.setAttribute("width", map_width * map_scale);
+    map_ref.setAttribute("height", map_height * map_scale);
+    map_ctx_ref = map_ref.getContext("2d");
+    map_ctx_ref.scale(map_scale, map_scale);
+    map_draw();
+}
+
+function map_draw() {
+    map_ctx_map.drawImage(map_img_map, 0, 0, map_width, map_height);
+    map_ctx_ref.drawImage(map_img_ref, 0, 0, map_width, map_height);
+    Object.keys(map_data).forEach(function(name) {
+        map_draw_country(name, map_data[name]);
+    });
+}
+
+function map_draw_country(name, color) {
+    if (typeof map_refrences === "undefined") return;
+    if (typeof map_refrences.bounds[name] === "undefined") return;
+    let bounds = map_refrences.bounds[name];
+    let width = (bounds.max.x - bounds.min.x) * map_scale;
+    let height = (bounds.max.y - bounds.min.y) * map_scale;
+
+    let ref_data = map_ctx_ref.getImageData(bounds.min.x * map_scale, bounds.min.y * map_scale, width, height).data;
+    let draw_data = map_ctx_map.getImageData(bounds.min.x * map_scale, bounds.min.y * map_scale, width, height).data;
+    for (let i = ref_data.indexOf(map_refrences.colors[name][0]); i < ref_data.length && i !== -1; i += 4){
+        if (map_refrences.colors[name][0] === ref_data[i] && map_refrences.colors[name][1] === ref_data[i + 1] &&
+            map_refrences.colors[name][2] === ref_data[i + 2]) {
             // same color
-            if (newColor[0] === dataDraw[i] && newColor[1] === dataDraw[i + 1] &&
-                newColor[2] === dataDraw[i + 2]) return;
+            if (color[0] === draw_data[i] && color[1] === draw_data[i + 1] &&
+                color[2] === draw_data[i + 2]) return;
             // different color => recolor
-            dataDraw[i] = newColor[0];
-            dataDraw[i + 1] = newColor[1];
-            dataDraw[i + 2] = newColor[2];
+            draw_data[i] = color[0];
+            draw_data[i + 1] = color[1];
+            draw_data[i + 2] = color[2];
         }
     }
-    let newImageData = ctxDraw.createImageData(width, height);
-    newImageData.data.set(dataDraw);
-    ctxDraw.putImageData(newImageData, bounds.min.x, bounds.min.y);
+    let newImageData = map_ctx_map.createImageData(width, height);
+    newImageData.data.set(draw_data);
+    map_ctx_map.putImageData(newImageData, bounds.min.x * map_scale, bounds.min.y * map_scale);
 }
 
-function getLandFromPixel(pixelData) {
+function map_click(event) {
+    var rect = map_node.getBoundingClientRect();
+    let x = event.clientX - rect.left;
+    let y = event.clientY - rect.top;
+}
+
+function map_position_to_land(x, y) {
+    let ref_color = map_ctx_ref.getImageData(x, y, 1, 1).data;
     let land = [];
-    if (pixelData.length >= 3) {
+    if (ref_color.length >= 3) {
         land = Object.keys(map_refrences.colors).filter(function(land) {
-            if(pixelData[0] === map_refrences.colors[land][0] && pixelData[1] === map_refrences.colors[land][1] && pixelData[2] === map_refrences.colors[land][2]) {
+            if(ref_color[0] === map_refrences.colors[land][0] &&
+                ref_color[1] === map_refrences.colors[land][1] &&
+                ref_color[2] === map_refrences.colors[land][2]) {
                 return true;
             }
             return false;
@@ -78,64 +131,221 @@ function getLandFromPixel(pixelData) {
     return land.join();
 }
 
-class MapComponent {
-    /*
-        Global variables:
-            - node
-            - ref
-            - ctxMap
-            - ctxRef
-            - imgMap
-            - imgRef
-
-            - background
-            - reference
-            - width
-            - height
-            - scale
-    */
-    constructor(node, width=1650, height=1080, scale=1.0) {
-        this.node = node;
-        this.background = node.getAttribute("data-map");
-        this.reference = node.getAttribute("data-ref");
-        this.width = width;
-        this.height = height;
-        this.scale = scale;
-        this.init();
-    }
-
-    init() {
-        this.node.setAttribute("width", this.width * this.scale);
-        this.node.setAttribute("height", this.height * this.scale);
-        this.ctxMap = this.node.getContext("2d");
-        this.ctxMap.scale(this.scale, this.scale);
-
-        this.ref = document.createElement("canvas");
-        this.ref.setAttribute("width", this.width * this.scale);
-        this.ref.setAttribute("height", this.height * this.scale);
-        this.ctxRef = this.ref.getContext("2d");
-        this.ctxRef.scale(this.scale, this.scale);
-
-        this.imgMap = document.createElement("img");
-        this.imgRef = document.createElement("img");
-        this.imageLoadedCount = 0;
-        $(this.imgMap).load(imageLoaded);
-        this.imgRef.onload = imageLoaded();
-        this.imgMap.src = this.background;
-        document.body.appendChild(this.imgMap);
-    }
-
-    imageLoaded() {
-        if (this.imageLoadedCount === 1) {
-
-            delete this.imageLoadedCount;
-        } else {
-            this.imageLoadedCount++;
-        }
-        console.log(this.imageLoadedCount);
-    }
-
-    toString() {
-        return JSON.stringify(this);
-    }
+function map_display_continent() {
+    let continents = {
+        "ARGENTINIEN": [
+            11,
+            53,
+            89
+        ],
+        "GROSSBRITANNIEN": [
+            88,
+            116,
+            140
+        ],
+        "SUEDOSTASIEN": [
+            235,
+            221,
+            208
+        ],
+        "CHINA": [
+            235,
+            221,
+            208
+        ],
+        "NORDWEST-TERRITORIEN": [
+            9,
+            40,
+            62
+        ],
+        "SIBIRIEN": [
+            235,
+            221,
+            208
+        ],
+        "INDONESIEN": [
+            161,
+            170,
+            177
+        ],
+        "ZENTRALAFRIKA": [
+            36,
+            84,
+            115
+        ],
+        "SKANDINAVIEN": [
+            88,
+            116,
+            140
+        ],
+        "NEUGUINEA": [
+            161,
+            170,
+            177
+        ],
+        "JAPAN": [
+            235,
+            221,
+            208
+        ],
+        "AEGYPTEN": [
+            36,
+            84,
+            115
+        ],
+        "BRASILIEN": [
+            11,
+            53,
+            89
+        ],
+        "PERU": [
+            11,
+            53,
+            89
+        ],
+        "WESTSTAATEN": [
+            9,
+            40,
+            62
+        ],
+        "JAKUTIEN": [
+            235,
+            221,
+            208
+        ],
+        "VENEZUELA": [
+            11,
+            53,
+            89
+        ],
+        "ALBERTA": [
+            9,
+            40,
+            62
+        ],
+        "RUSSLAND": [
+            88,
+            116,
+            140
+        ],
+        "AFGHANISTAN": [
+            235,
+            221,
+            208
+        ],
+        "NORDAFRIKA": [
+            36,
+            84,
+            115
+        ],
+        "OSTSTAATEN": [
+            9,
+            40,
+            62
+        ],
+        "OSTAFRIKA": [
+            36,
+            84,
+            115
+        ],
+        "INDIEN": [
+            235,
+            221,
+            208
+        ],
+        "SUEDEUROPA": [
+            88,
+            116,
+            140
+        ],
+        "SUEDAFRIKA": [
+            36,
+            84,
+            115
+        ],
+        "ISLAND": [
+            88,
+            116,
+            140
+        ],
+        "KAMTSCHATKA": [
+            235,
+            221,
+            208
+        ],
+        "OSTAUSTRALIEN": [
+            161,
+            170,
+            177
+        ],
+        "MITTELAMERIKA": [
+            9,
+            40,
+            62
+        ],
+        "WESTAUSTRALIEN": [
+            161,
+            170,
+            177
+        ],
+        "MONGOLEI": [
+            235,
+            221,
+            208
+        ],
+        "WESTEUROPA": [
+            88,
+            116,
+            140
+        ],
+        "MADAGASKAR": [
+            36,
+            84,
+            115
+        ],
+        "MITTLERER-OSTEN": [
+            235,
+            221,
+            208
+        ],
+        "OSTKANADA": [
+            9,
+            40,
+            62
+        ],
+        "ALASKA": [
+            9,
+            40,
+            62
+        ],
+        "GROENLAND": [
+            9,
+            40,
+            62
+        ],
+        "ONTARIO": [
+            9,
+            40,
+            62
+        ],
+        "IRKUTSK": [
+            235,
+            221,
+            208
+        ],
+        "URAL": [
+            235,
+            221,
+            208
+        ],
+        "NORDEUROPA": [
+            88,
+            116,
+            140
+        ]
+    };
+    let temp_map_data = map_data;
+    map_data = continents;
+    map_draw();
+    map_data = temp_map_data;
 }
