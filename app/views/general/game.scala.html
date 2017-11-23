@@ -21,6 +21,7 @@
                 <!-- Bootstrap CSS -->
             <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/account/index.css")"> <!-- our css -->
             <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootsrap.css")"> <!-- our css -->
+            <script src="@routes.Assets.versioned("javascripts/mainPaneJS.js")"></script>
         </head>
         <body>
 
@@ -37,13 +38,13 @@
                                 Spiel
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Spiel laden</a>
-                                <a class="dropdown-item" href="#">Spiel speichern</a>
+                                <a class="dropdown-item" href="#" id="dropdownLoad">Spiel laden</a>
+                                <a class="dropdown-item" href="#" id="dropdownSave">Spiel speichern</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Zeige Kontinente</a>
-                                <a class="dropdown-item" href="#">Spiel fortsetzen</a>
+                                <a class="dropdown-item" href="#" id="dropdownShow">Zeige Kontinente</a>
+                                <a class="dropdown-item" href="#" id="dropdownContinue">Spiel fortsetzen</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Beenden</a>
+                                <a class="dropdown-item" href="#" id="dropdownClose">Beenden</a>
                             </div>
                         </li>
 
@@ -60,7 +61,7 @@
                         </ul>
                     </ul>
                     <form class="form-inline">
-                        <button class="btn btn-outline-warning" type="submit">Rückgängig</button>
+                        <button class="btn btn-outline-warning" id="withdrawButton"type="submit">Rückgängig</button>
                     </form>
                 </div>
             </nav>
@@ -68,7 +69,7 @@
             <div class="mt-2 col-md-20"></div>  <!-- adding some margings -->
 
             <div class="container">
-                <img class="img-fluid" src="@routes.Assets.versioned("images/map_ref.png")" width="1000" height="600"/>
+                <img class="img-fluid" src="@routes.Assets.versioned("images/map_ref.png")" width="1000" height="600" id="testpicture"/>
             </div>
 
             <div class="mt-2 col-md-20"></div>  <!-- adding some margings -->
@@ -85,7 +86,7 @@
                         3
                     </div>
                     <div class="col-7">
-                        <button type="submit" class="btn btn-outline-success btn-block">Zug beenden</button>
+                        <button type="submit" class="btn btn-outline-success btn-block" id="finishMoveButton">Zug beenden</button>
                     </div>
                 </div>
             </div>
