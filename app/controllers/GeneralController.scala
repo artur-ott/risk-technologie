@@ -25,7 +25,7 @@ class GeneralController @Inject() (cc: ControllerComponents) extends AbstractCon
       }
 
   def index = Action {
-      Ok(Colors.RED.toString)
+      Ok(views.html.index())
       }
   
 }
