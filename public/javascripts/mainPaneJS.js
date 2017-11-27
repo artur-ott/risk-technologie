@@ -11,34 +11,34 @@ $(document).ready(function() {
 });
 
 function mouseoverPicture() {
-    console.log("Pictured viewed");
+    // Add nice hover hover function here
 }
 
 function loadGame() {
-    console.log("Loaded game");
+    // Dummy function. Probably never needed
 }
 
 function saveGame() {
-    console.log("Saved game");
+    // Dummy function. Probably never needed
 }
 
 function showContinents() {
-    console.log("Showed continents");
+    // Nice dummy function here
 }
 
 function continueGame() {
-    console.log("Continued game");
+    // nothing to do here. Move on
 }
 
 function closeGame() {
-    console.log("Closed game");
+    // Dummy function. Implement it later
 }
 
 function withdraw() {
-    console.log("Rückgängig geklickt");
+    // Insert function here
 }
 
 function finishMove() {
-    console.log("Zug beendet geklickt");
+    // Dummy function to rule the world
 }
 
