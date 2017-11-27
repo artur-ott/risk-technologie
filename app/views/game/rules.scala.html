@@ -1,0 +1,141 @@
+
+@main("Rules") {
+
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <title>Risk Technologie- Spielbeschreibung</title>
+                <!-- Required meta tags -->
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+                <!-- Bootstrap CSS -->
+            <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/account/index.css")"> <!-- our css -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+        </head>
+        <body>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Navigation
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="http://localhost:9000/">Index</a>
+                                <a class="dropdown-item" href="http://localhost:9000/risk/game/description">Spielbeschreibung</a>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <nav class="navbar navbar-light bg-light">
+                        <span class="navbar-text">
+                            <div class="mx-auto" style="width: 2000px;">
+                                Risk Technologie - Das Spiel
+                            </div>
+                        </span>
+                    </nav>
+
+                </div>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+
+            <h1>Risiko</h1>
+            <h2>Regeln</h2>
+            <h3><b>Spielvorbereitung</b></h3>
+            Vor dem Spiel müssen sich die Teilnehmer auf das Ziel des Spieles verständigen. Entweder ist dies die Eroberung der ganzen Welt oder es ergibt sich aus der Aufgabenkarte, die die Spieler bekommen
+            und den dort beschriebenen Auftrag erfüllen müssen, d. h., sie versuchen gegen die Interessen der anderen Mitspieler einzelne Kontinente oder Gebiete zu erobern.
+            Im weiteren Spielverlauf gelten für beide Spielvarianten dieselben Regeln.
+            Zu Beginn eines Spiels werden die Gebietskarten reihum verdeckt an die Mitspieler verteilt. Die Mitspieler positionieren jeweils eine Armee in den Gebieten,
+            für die sie eine Gebietskarte erhalten haben. Danach wird reihum eine feste Anzahl von Soldaten (2 * Gesamtanzahl der Gebiete / Anzahl der Spieler) auf die eigenen Gebiete verteilt,
+            indem ein Spieler bei jedem Durchgang genau eine Einheit auf genau ein eigenes Land setzt. Im Anschluss werden sämtliche Gebietskarten wieder dem Spiel zugeführt und auf einem Kartenstapel vorgehalten,
+            von wo sie ein Spieler als Belohnung für die erfolgreiche Eroberung eines Landes erhält.
+            Nach dem Verteilen der Gebiete und Armeen beginnt das eigentliche Spielgeschehen.
+            Jeder Zug eines Spielers besteht dabei aus vier aufeinander folgenden Phasen, deren Reihenfolge genau zu beachten ist:
+            <p><b>Phase 1: Verstärkung</b></p>
+            <p>Zu Beginn einer Runde erhält der Spieler, der an der Reihe ist, Verstärkungen nach bestimmten Kriterien (Anzahl der eigenen Gebiete, Besetzen eines Kontinents oder Eintausch von Gebietskarten), die er auf seine Gebiete aufteilen kann.</p>
+            <p><b>Phase 2: Befreiungsaktionen</b></p>
+            <p>Nach dem Verteilen der Verstärkungen kann der Spieler Gebiete erobern, die sich in Besitz von Mitspielern befinden. Die Eroberungsaktion wird mit Hilfe der Würfel ausgeführt. Der Angreifer darf im Optimalfall drei Würfel benutzen, der Verteidiger maximal zwei. Hierbei ist zu beachten, dass jeweils das höchste und das zweithöchste Wurfergebnis von Angreifer und Verteidiger gegenübergestellt wird. Zeigen zwei zu vergleichende Würfe die gleiche Augenzahl, so gewinnt der verteidigende Spieler und der Angreifer muss eine Einheit vom Brett nehmen. Bei größeren Truppenkontingenten wird solange gewürfelt, bis der Verteidiger oder der Angreifer keine Truppen mehr hat und somit der Angreifer dieses Land unter seinen Besitz gebracht oder der Verteidiger das Land erfolgreich verteidigt hat, der Angreifer den Angriff vorzeitig abbricht oder keine Truppen mehr für einen Angriff hat.</p>
+            <p><b>Phase 3: Truppenbewegungen</b></p>
+            <p>Im Anschluss aller Eroberungsaktionen kann der Spieler beliebig viele Einheiten <b>eines</b> Landes nach bestimmten Regeln in <b>ein</b> anderes Land verschieben. Auf jedem Gebiet muss stets mindestens eine Armee zurückbleiben, um das Land zu sichern.</p>
+            <p><b>Phase 4: Gebietskarte ziehen</b></p>
+            <p>Bei erfolgreicher Eroberung mindestens eines Landes erhält der Spieler eine Gebietskarte.</p>
+            <h3>Die Chancen eines einzelnen Angriffs lassen sich mit Mitteln der <a href="https://de.wikipedia.org/wiki/Abzählende_Kombinatorik">Kombinatorik</a> berechnen </h3>
+            <p>Folgende Tabelle gibt eine Übersicht über die Gewinnwahrscheinlichkeiten</p>
+            <table>
+                <tr>
+                    <th>Angreifer Armeen</th>
+                    <th>Verteidiger Armeen</th>
+                    <th>Angreifer totaler Sieg</th>
+                    <th>Verteidiger totaler Sieg</th>
+                    <th>Unentschieden</th>
+                    <th>günstige Kombinationen</th>
+                    <th>mögliche Kombinationen</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>41,7%</td>
+                    <td>58,3%</td>
+                    <td>-</td>
+                    <td>15</td>
+                    <td>36</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>25,5%</td>
+                    <td>74,6%</td>
+                    <td>-</td>
+                    <td>55</td>
+                    <td>216</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>1</td>
+                    <td>57,9%</td>
+                    <td>42,6%</td>
+                    <td>-</td>
+                    <td>125</td>
+                    <td>216</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>22,8%</td>
+                    <td>44,8%</td>
+                    <td>32,4%</td>
+                    <td>295</td>
+                    <td>1296</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>66,0%</td>
+                    <td>34,0%</td>
+                    <td>-</td>
+                    <td>855</td>
+                    <td>1296</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>37,2%</td>
+                    <td>29,3%</td>
+                    <td>33,6</td>
+                    <td>2890</td>
+                    <td>7776</td>
+                </tr>
+            </table>
+            <p>Quelle: <a href="https://de.wikipedia.org/wiki/Risiko_(Spiel)">Wikipedia</a> </p>
+
+                <!-- Optional JavaScript -->
+                <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+        </body>
+    </html>
+}

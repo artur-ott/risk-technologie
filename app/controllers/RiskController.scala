@@ -26,7 +26,7 @@ class RiskController @Inject() (cc: ControllerComponents) extends AbstractContro
         val worldFactory = new WorldFactory()
         val world = worldFactory.getWorld()
         val gameLogic = new ImplGameLogic(world)
-        Ok(views.html.general.story())
+        Ok(views.html.game.description())
     }
   
 }

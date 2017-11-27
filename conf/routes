@@ -9,6 +9,12 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # DO NOT CHANGE
 
 # Risk information
-GET     /risk/story                 controllers.GeneralController.story
 
 GET     /                           controllers.GeneralController.index
+
+GET     /risk/game                  controllers.GeneralController.game
+
+# Game specific
+GET     /risk/game/description      controllers.GeneralController.description
+
+GET     /risk/game/rules            controllers.GeneralController.rules
