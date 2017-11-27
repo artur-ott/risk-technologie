@@ -1,15 +1,3 @@
-$(document).ready(function() {
-    document.getElementById("testpicture").addEventListener("mouseover", mouseoverPicture);
-    document.getElementById("dropdownLoad").addEventListener("click", loadGame);
-    document.getElementById("dropdownSave").addEventListener("click", saveGame);
-    document.getElementById("dropdownShow").addEventListener("click", showContinents);
-    document.getElementById("dropdownContinue").addEventListener("click", continueGame);
-    document.getElementById("dropdownClose").addEventListener("click", closeGame);
-    document.getElementById("withdrawButton").addEventListener("click", withdraw);
-    document.getElementById("finishMoveButton").addEventListener("click", finishMove);
-
-});
-
 function mouseoverPicture() {
     // Add nice hover hover function here
 }
@@ -42,3 +30,16 @@ function finishMove() {
     // Dummy function to rule the world
 }
 
+
+
+$(document).ready(function() {
+    document.getElementById("testpicture").addEventListener("mouseover", mouseoverPicture);
+    document.getElementById("dropdownLoad").addEventListener("click", loadGame);
+    document.getElementById("dropdownSave").addEventListener("click", saveGame);
+    document.getElementById("dropdownShow").addEventListener("click", showContinents);
+    document.getElementById("dropdownContinue").addEventListener("click", continueGame);
+    document.getElementById("dropdownClose").addEventListener("click", closeGame);
+    document.getElementById("withdrawButton").addEventListener("click", withdraw);
+    document.getElementById("finishMoveButton").addEventListener("click", finishMove);
+
+});
