@@ -9,11 +9,9 @@ websocket.onclose = function () {
 };
 
 websocket.onerror = function (error) {
-    console.log('Error in Websocket Occured: ' + error);
+    console.log('Error in Websocket Occured: ' + JSON.stringify(error));
 };
 
 websocket.onmessage = function (e) {
-    console.log("Message: " + e);
+    console.log("Message: " + e.data);
 };
-
-websocket.send("bla");

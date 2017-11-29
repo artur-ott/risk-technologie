@@ -7,6 +7,7 @@ import play.api.libs.streams.ActorFlow
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.actor._
+import scala.concurrent.Future
 
 import services.game.{SocketActor => GameSocketActor}
 import de.htwg.se.scala_risk.model.impl._
@@ -26,9 +27,14 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
    * `GET /count` requests by an entry in the `routes` config file.
    */
 
+  val test: Array[String] = Array(
+    "SDFGHJKLOELKJHGFFG",
+    "WERTZUIOPPPPPOIZTD"
+  )
+
   def index = Action {
-      Ok(views.html.index())
-      }
+    Ok(views.html.index()).withSession("user" -> this.test(0))
+  }
 
   def game = Action {
     Ok(views.html.general.game())
@@ -42,10 +48,13 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
     Ok(views.html.game.rules())
   }
 
-  def socket = WebSocket.accept[String, String] { request =>
-    ActorFlow.actorRef { out =>
-      println("Connect received")
-      Props(new GameSocketActor(out))
-    }
+  def socket = WebSocket.acceptOrResult[String, String] { request =>
+    Future.successful(request.session.get("user") match {
+      case None => Left(Forbidden)
+      case Some(user) => Right(ActorFlow.actorRef { out =>
+        println("Connect received from: " + user)
+        Props(new GameSocketActor(out))
+      })
+    })
   }
 }
