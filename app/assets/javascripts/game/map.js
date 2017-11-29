@@ -818,10 +818,6 @@ let map_img_ref;
 let map_img_loaded = 0;
 let map_data = {};
 
-$(document).ready(function() {
-    _map_init($("#map")[0], 1650, 1080, 1);
-});
-
 function _map_init(node, width=1650, height=1080) {
     if (typeof map_refrences === "undefined" || !window.jQuery) return;
     map_node = node;

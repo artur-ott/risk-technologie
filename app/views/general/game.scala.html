@@ -1,8 +1,13 @@
-@additionalJs = {
-    <script src="@routes.Assets.versioned("javascripts/mainPaneJS.js")"></script>
+@additionalCss = {
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/game.css")">
 }
 
-@main("Risk Technologie- The Game!", Html(""), additionalJs) {
+@additionalJs = {
+    <script src="@routes.Assets.versioned("javascripts/game/main.js")"></script>
+    <script src="@routes.Assets.versioned("javascripts/game/map.js")" type="text/javascript"></script>
+}
+
+@main("Risk Technologie- The Game!", additionalCss, additionalJs) {
     <nav class="navbar navbar-expand navbar-light bg-light">
         <a class="navbar-brand"> Risk Technologie - Das Spiel</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,8 +37,8 @@
                             Weiteres
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" target="_blank" href="@routes.GeneralController.description()">Spielbeschreibung</a>
-                            <a class="dropdown-item" target="_blank" href="@routes.GeneralController.rules()">Spielregeln</a>
+                            <a class="dropdown-item" target="_blank" href="@routes.GameController.description()">Spielbeschreibung</a>
+                            <a class="dropdown-item" target="_blank" href="@routes.GameController.rules()">Spielregeln</a>
                         </div>
                     </li>
                 </ul>
@@ -47,7 +52,8 @@
     <div class="mt-2 col-md-20"></div>  <!-- adding some margings -->
 
     <div class="container">
-        <img class="img-fluid" src="@routes.Assets.versioned("images/map_ref.png")" width="1000" height="600" id="testpicture"/>
+        <canvas id="map" data-map="@routes.Assets.versioned("images/map_white.png")"
+            data-ref="@routes.Assets.versioned("images/map_ref_new.png")"></canvas>
     </div>
 
     <div class="mt-2 col-md-20"></div>  <!-- adding some margings -->

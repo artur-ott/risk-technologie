@@ -33,7 +33,6 @@ function finishMove() {
 
 
 $(document).ready(function() {
-    document.getElementById("testpicture").addEventListener("mouseover", mouseoverPicture);
     document.getElementById("dropdownLoad").addEventListener("click", loadGame);
     document.getElementById("dropdownSave").addEventListener("click", saveGame);
     document.getElementById("dropdownShow").addEventListener("click", showContinents);
@@ -41,5 +40,5 @@ $(document).ready(function() {
     document.getElementById("dropdownClose").addEventListener("click", closeGame);
     document.getElementById("withdrawButton").addEventListener("click", withdraw);
     document.getElementById("finishMoveButton").addEventListener("click", finishMove);
-
+    _map_init($("#map")[0], 1650, 1080, 1);
 });
