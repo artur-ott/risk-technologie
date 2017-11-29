@@ -1,9 +1,14 @@
 package controllers
 
 import javax.inject._
-
 import play.api.mvc._
 
+import play.api.libs.streams.ActorFlow
+import akka.actor.ActorSystem
+import akka.stream.Materializer
+import akka.actor._
+
+import services.game.{SocketActor => GameSocketActor}
 import de.htwg.se.scala_risk.model.impl._
 
 /**
@@ -13,7 +18,7 @@ import de.htwg.se.scala_risk.model.impl._
  * object is injected by the Guice dependency injection system.
  */
 @Singleton
-class GameController @Inject() (cc: ControllerComponents) extends AbstractController(cc) {
+class GameController @Inject() (cc: ControllerComponents) (implicit system: ActorSystem, mat: Materializer) extends AbstractController(cc) {
 
   /**
    * Create an action that responds with the [[Counter]]'s current
@@ -35,5 +40,12 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
 
   def rules = Action {
     Ok(views.html.game.rules())
+  }
+
+  def socket = WebSocket.accept[String, String] { request =>
+    ActorFlow.actorRef { out =>
+      println("Connect received")
+      Props(new GameSocketActor(out))
+    }
   }
 }

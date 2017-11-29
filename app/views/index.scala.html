@@ -1,3 +1,6 @@
+@additionalCss = {
+    <script src="@routes.Assets.versioned("javascripts/test.js")" type="text/javascript"></script>
+}
 
-@main("Map") {
+@main("Map", Html(""), additionalCss) {
 }

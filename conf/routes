@@ -10,11 +10,13 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # Risk information
 
-GET     /                      controllers.GameController.index
-
-GET     /game                  controllers.GameController.game
+GET     /                           controllers.GameController.index
 
 # Game specific
-GET     /game/description      controllers.GameController.description
+GET     /game                       controllers.GameController.game
 
-GET     /game/rules            controllers.GameController.rules
+GET     /game/socket                controllers.GameController.socket
+
+GET     /game/description           controllers.GameController.description
+
+GET     /game/rules                 controllers.GameController.rules
