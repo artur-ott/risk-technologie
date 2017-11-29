@@ -13,7 +13,7 @@ import de.htwg.se.scala_risk.model.impl._
  * object is injected by the Guice dependency injection system.
  */
 @Singleton
-class GeneralController @Inject() (cc: ControllerComponents) extends AbstractController(cc) {
+class GameController @Inject() (cc: ControllerComponents) extends AbstractController(cc) {
 
   /**
    * Create an action that responds with the [[Counter]]'s current
