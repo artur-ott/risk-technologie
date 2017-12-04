@@ -5,6 +5,9 @@ import javax.inject._
 import play.api.mvc._
 
 import de.htwg.se.scala_risk.model.impl._
+import scala.collection.mutable._
+import models._
+import models.shared.GamesShared
 
 /**
  * This controller demonstrates how to use dependency injection to
@@ -21,9 +24,31 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
    * `GET /count` requests by an entry in the `routes` config file.
    */
 
-  def index = Action {
-      Ok(views.html.index())
+  def index = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(GamesShared.getGames))
+  }
+
+  def start = Action { implicit request: Request[AnyContent] =>
+    if (request.body.asFormUrlEncoded.get.contains("game_selected")) {
+      if (GamesShared.getGames.filter(_.id.equals(request.body.asFormUrlEncoded.get("game_selected").head.toString)).length == 0) {
+        Redirect(routes.GameController.index(), 302)
+      } else {
+        val gameModel = GamesShared.getGames.filter(_.id.equals(request.body.asFormUrlEncoded.get("game_selected").head.toString)).head
+        gameModel.player += PlayerModel(request.body.asFormUrlEncoded.get("player_name").head.toString)
+
+        println(GamesShared.getGames.toString)
+        println(request.body.asFormUrlEncoded.get("player_name").head.toString + " ist dem Spiel "
+          + request.body.asFormUrlEncoded.get("game_selected").head.toString + " beigetreten")
+        Redirect(routes.GameController.game(), 302).withSession("user" -> request.body.asFormUrlEncoded.get("player_name").head.toString)
       }
+    } else {
+      val playerList = ListBuffer[PlayerModel]()
+      playerList += PlayerModel(request.body.asFormUrlEncoded.get("player_name").head.toString)
+      GamesShared.addGame(GameModel("mein Spiel", playerList, null))
+      println(request.body.asFormUrlEncoded.get("player_name").head.toString + " hat ein Spiel gestartet")
+      Redirect(routes.GameController.game(), 302).withSession("user" -> request.body.asFormUrlEncoded.get("player_name").head.toString)
+    }
+  }
 
   def game = Action {
     Ok(views.html.general.game())

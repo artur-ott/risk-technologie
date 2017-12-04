@@ -11,6 +11,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # Risk information
 
 GET     /                      controllers.GameController.index
+POST    /start-game            controllers.GameController.start
 
 GET     /game                  controllers.GameController.game
 
