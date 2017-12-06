@@ -29,8 +29,22 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
   }
 
   def start = Action { implicit request: Request[AnyContent] =>
-    println(request.body.asFormUrlEncoded)
-    if (request.body.asFormUrlEncoded.get contains "game_selected") {
+    request.body.asFormUrlEncoded match {
+      case None => BadRequest("")
+      case Some(post) => {
+        if (post.contains("game_selected")) {
+          if (GamesShared.getGames.filter(_.id.equals(post.get("game_selected").mkString(""))).length == 0) {
+            Redirect(routes.GameController.index(), 302)
+          } else {
+
+          }
+        } else {
+
+        }
+      }
+    }
+    Ok("Test")
+    /*if (request.body.asFormUrlEncoded.get.contains("game_selected")) {
       if (GamesShared.getGames.filter(_.id.equals(request.body.asFormUrlEncoded.get("game_selected").head.toString)).length == 0) {
         Redirect(routes.GameController.index(), 302)
       } else {
@@ -48,7 +62,7 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
       GamesShared.addGame(GameModel("mein Spiel", playerList, None))
       println(request.body.asFormUrlEncoded.get("player_name").head.toString + " hat ein Spiel gestartet")
       Redirect(routes.GameController.game(), 302).withSession("user" -> request.body.asFormUrlEncoded.get("player_name").head.toString)
-    }
+    }*/
   }
 
   def game = Action {
