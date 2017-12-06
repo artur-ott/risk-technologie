@@ -29,7 +29,8 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
   }
 
   def start = Action { implicit request: Request[AnyContent] =>
-    if (request.body.asFormUrlEncoded.get.contains("game_selected")) {
+    println(request.body.asFormUrlEncoded)
+    if (request.body.asFormUrlEncoded.get contains "game_selected") {
       if (GamesShared.getGames.filter(_.id.equals(request.body.asFormUrlEncoded.get("game_selected").head.toString)).length == 0) {
         Redirect(routes.GameController.index(), 302)
       } else {
