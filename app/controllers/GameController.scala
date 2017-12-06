@@ -44,7 +44,7 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
     } else {
       val playerList = ListBuffer[PlayerModel]()
       playerList += PlayerModel(request.body.asFormUrlEncoded.get("player_name").head.toString)
-      GamesShared.addGame(GameModel("mein Spiel", playerList, null))
+      GamesShared.addGame(GameModel("mein Spiel", playerList, None))
       println(request.body.asFormUrlEncoded.get("player_name").head.toString + " hat ein Spiel gestartet")
       Redirect(routes.GameController.game(), 302).withSession("user" -> request.body.asFormUrlEncoded.get("player_name").head.toString)
     }
