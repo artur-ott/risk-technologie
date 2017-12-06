@@ -11,6 +11,9 @@ import scala.concurrent.Future
 
 import services.game.{SocketActor => GameSocketActor}
 import de.htwg.se.scala_risk.model.impl._
+import scala.collection.mutable._
+import models._
+import models.shared.GamesShared
 
 /**
  * This controller demonstrates how to use dependency injection to
@@ -26,7 +29,6 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
    * count. The result is plain text. This `Action` is mapped to
    * `GET /count` requests by an entry in the `routes` config file.
    */
-
   val test: Array[String] = Array(
     "SDFGHJKLOELKJHGFFG",
     "WERTZUIOPPPPPOIZTD"
@@ -34,6 +36,57 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
 
   def index = Action {
     Ok(views.html.index()).withSession("user" -> this.test(0))
+  }
+
+  def start = Action { implicit request: Request[AnyContent] =>
+    request.body.asFormUrlEncoded match {
+      // No request
+      case None => BadRequest("")
+      case Some(post) => {
+        if (post.contains("game_selected")) {
+          val gameSelected = post.get("game_selected").getOrElse(List[String]("-1")).mkString;
+          if (!GamesShared.getGames.exists(_.id.equals(gameSelected))) {
+            // No game found
+            Redirect(routes.GameController.index(), 302)
+          } else {
+            GamesShared.getGames.filter(_.id.equals(gameSelected)).headOption match {
+              // No game found
+              case None => BadRequest("")
+              case Some(gameModel) => {
+
+                post.get("player_name") match {
+                  // No player found
+                  case None => BadRequest("")
+                  case Some(player) => {
+                    gameModel.player += PlayerModel(player.mkString)
+
+                    println(GamesShared.getGames.toString)
+                    println(player.mkString + " ist dem Spiel "
+                      + gameSelected + " beigetreten")
+
+                    Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
+                  }
+                }
+              }
+            }
+          }
+        } else {
+          post.get("player_name") match {
+            // No player found
+            case None => BadRequest("")
+            case Some(player) => {
+              val playerList = ListBuffer[PlayerModel]()
+              playerList += PlayerModel(player.mkString)
+              GamesShared.addGame(GameModel("mein Spiel", playerList, None))
+
+              println(player.mkString + " hat ein Spiel gestartet")
+
+              Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
+            }
+          }
+        }
+      }
+    }
   }
 
   def game = Action {
