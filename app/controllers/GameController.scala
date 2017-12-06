@@ -30,45 +30,53 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
 
   def start = Action { implicit request: Request[AnyContent] =>
     request.body.asFormUrlEncoded match {
+      // No request
       case None => BadRequest("")
       case Some(post) => {
         if (post.contains("game_selected")) {
-          if (GamesShared.getGames.filter(_.id.equals(post.get("game_selected").mkString(""))).length == 0) {
+          val game_selected = post.get("game_selected").getOrElse(List[String]("-1")).mkString;
+          if (!GamesShared.getGames.exists(_.id.equals(game_selected))) {
+            // No game found
             Redirect(routes.GameController.index(), 302)
           } else {
-            val gameModel = GamesShared.getGames.filter(_.id.equals(post.get("game_selected").mkString(""))).head
-            gameModel.player += PlayerModel(post.get("player_name").mkString(""))
+            GamesShared.getGames.filter(_.id.equals(game_selected)).headOption match {
+              // No game found
+              case None => BadRequest("")
+              case Some(gameModel) => {
 
-            println(GamesShared.getGames.toString)
-            println(post.get("player_name").mkString("") + " ist dem Spiel "
-              + post.get("game_selected").mkString("") + " beigetreten")
-            Redirect(routes.GameController.game(), 302).withSession("user" -> post.get("player_name").mkString(""))
+                post.get("player_name") match {
+                  // No player found
+                  case None => BadRequest("")
+                  case Some(player) => {
+                    gameModel.player += PlayerModel(player.mkString)
+
+                    println(GamesShared.getGames.toString)
+                    println(player.mkString + " ist dem Spiel "
+                      + game_selected + " beigetreten")
+
+                    Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
+                  }
+                }
+              }
+            }
           }
         } else {
+          post.get("player_name") match {
+            // No player found
+            case None => BadRequest("")
+            case Some(player) => {
+              val playerList = ListBuffer[PlayerModel]()
+              playerList += PlayerModel(player.mkString)
+              GamesShared.addGame(GameModel("mein Spiel", playerList, None))
 
+              println(player.mkString + " hat ein Spiel gestartet")
+
+              Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
+            }
+          }
         }
       }
     }
-    Ok("Test")
-    /*if (request.body.asFormUrlEncoded.get.contains("game_selected")) {
-      if (GamesShared.getGames.filter(_.id.equals(request.body.asFormUrlEncoded.get("game_selected").head.toString)).length == 0) {
-        Redirect(routes.GameController.index(), 302)
-      } else {
-        val gameModel = GamesShared.getGames.filter(_.id.equals(request.body.asFormUrlEncoded.get("game_selected").head.toString)).head
-        gameModel.player += PlayerModel(request.body.asFormUrlEncoded.get("player_name").head.toString)
-
-        println(GamesShared.getGames.toString)
-        println(request.body.asFormUrlEncoded.get("player_name").head.toString + " ist dem Spiel "
-          + request.body.asFormUrlEncoded.get("game_selected").head.toString + " beigetreten")
-        Redirect(routes.GameController.game(), 302).withSession("user" -> request.body.asFormUrlEncoded.get("player_name").head.toString)
-      }
-    } else {
-      val playerList = ListBuffer[PlayerModel]()
-      playerList += PlayerModel(request.body.asFormUrlEncoded.get("player_name").head.toString)
-      GamesShared.addGame(GameModel("mein Spiel", playerList, None))
-      println(request.body.asFormUrlEncoded.get("player_name").head.toString + " hat ein Spiel gestartet")
-      Redirect(routes.GameController.game(), 302).withSession("user" -> request.body.asFormUrlEncoded.get("player_name").head.toString)
-    }*/
   }
 
   def game = Action {
