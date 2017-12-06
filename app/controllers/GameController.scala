@@ -34,12 +34,12 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
       case None => BadRequest("")
       case Some(post) => {
         if (post.contains("game_selected")) {
-          val game_selected = post.get("game_selected").getOrElse(List[String]("-1")).mkString;
-          if (!GamesShared.getGames.exists(_.id.equals(game_selected))) {
+          val gameSelected = post.get("game_selected").getOrElse(List[String]("-1")).mkString;
+          if (!GamesShared.getGames.exists(_.id.equals(gameSelected))) {
             // No game found
             Redirect(routes.GameController.index(), 302)
           } else {
-            GamesShared.getGames.filter(_.id.equals(game_selected)).headOption match {
+            GamesShared.getGames.filter(_.id.equals(gameSelected)).headOption match {
               // No game found
               case None => BadRequest("")
               case Some(gameModel) => {
@@ -52,7 +52,7 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
 
                     println(GamesShared.getGames.toString)
                     println(player.mkString + " ist dem Spiel "
-                      + game_selected + " beigetreten")
+                      + gameSelected + " beigetreten")
 
                     Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
                   }
