@@ -36,7 +36,13 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
           if (GamesShared.getGames.filter(_.id.equals(post.get("game_selected").mkString(""))).length == 0) {
             Redirect(routes.GameController.index(), 302)
           } else {
+            val gameModel = GamesShared.getGames.filter(_.id.equals(post.get("game_selected").mkString(""))).head
+            gameModel.player += PlayerModel(post.get("player_name").mkString(""))
 
+            println(GamesShared.getGames.toString)
+            println(post.get("player_name").mkString("") + " ist dem Spiel "
+              + post.get("game_selected").mkString("") + " beigetreten")
+            Redirect(routes.GameController.game(), 302).withSession("user" -> post.get("player_name").mkString(""))
           }
         } else {
 
