@@ -34,8 +34,8 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
     "WERTZUIOPPPPPOIZTD"
   )
 
-  def index = Action {
-    Ok(views.html.index()).withSession("user" -> this.test(0))
+  def index = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.index(GamesShared.getGames))
   }
 
   def start = Action { implicit request: Request[AnyContent] =>

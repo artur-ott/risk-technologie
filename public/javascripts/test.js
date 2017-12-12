@@ -1,7 +1,10 @@
 var websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
+let AllowedMessages = [];
 
 websocket.onopen = function(event) {
-    console.log("Connected to Websocket");
+    websocket.send(JSON.stringify({
+        "type": "MessageTypeList"
+    }));
 }
 
 websocket.onclose = function () {
@@ -13,5 +16,13 @@ websocket.onerror = function (error) {
 };
 
 websocket.onmessage = function (e) {
-    console.log("Message: " + e.data);
+    let message = JSON.parse(e.data);
+    switch (message) {
+        case "MessageTypeList":
+            AllowedMessages = message.value;
+            console.log(message.value);
+        break;
+        default:
+            console.log(message.type);
+    }
 };
