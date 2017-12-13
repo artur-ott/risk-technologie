@@ -10,7 +10,8 @@ import akka.actor._
 import scala.concurrent.Future
 
 import services.game.{SocketActor => GameSocketActor}
-import de.htwg.se.scala_risk.model.impl._
+import de.htwg.se.scala_risk.model.impl.{ World => ImplWorld }
+import de.htwg.se.scala_risk.controller.impl.{ GameLogic => ImplGameLogic }
 import scala.collection.mutable._
 import models._
 import models.shared.GamesShared
@@ -59,11 +60,12 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
                   case None => BadRequest("")
                   case Some(player) => {
                     gameModel.player += PlayerModel(player.mkString)
+                    val world = new ImplWorld()
+                    gameModel.gameLogic = Some(new ImplGameLogic(world))
 
                     println(GamesShared.getGames.toString)
                     println(player.mkString + " ist dem Spiel "
                       + gameSelected + " beigetreten")
-
                     Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
                   }
                 }
@@ -106,7 +108,7 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
       case None => Left(Forbidden)
       case Some(user) => Right(ActorFlow.actorRef { out =>
         println("Connect received from: " + user)
-        Props(new GameSocketActor(out))
+        Props(new GameSocketActor(out, user))
       })
     })
   }

@@ -5,14 +5,15 @@ import play.api.libs.json._
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, UpdateMap, Unknown = Value
+  val MessageTypeList, UpdateMap, Click, Unknown = Value
 
   def stringToValue(messageType: String):Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
 
-class SocketActor(out: ActorRef) extends Actor {
+class SocketActor(out: ActorRef, player: String) extends Actor {
     def receive = {
       case msg: String => {
+        println("Message received from: " + player)
         val json: JsValue = Json.parse(msg)
         (json \ "type").asOpt[String] match {
           case None => sendMessageTypes
@@ -20,6 +21,7 @@ class SocketActor(out: ActorRef) extends Actor {
             case None => println("No type: "+ msg + ", " + MessageTypes.stringToValue(msg))
             case Some(messageTypeValue) => messageTypeValue match {
               case MessageTypes.MessageTypeList => sendMessageTypes
+              case MessageTypes.Click => (json \ "message").asOpt[String].getOrElse("") // TODO: implement game logic
             }
           }
         }

@@ -1,5 +1,11 @@
-var websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
 let AllowedMessages = [];
+let websocket;
+function connectToWebsocket() {
+    // websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
+    websocket = new WebSocket("ws://localhost:9000/game/socket");
+}
+
+connectToWebsocket();
 
 websocket.onopen = function(event) {
     websocket.send(JSON.stringify({
@@ -9,6 +15,7 @@ websocket.onopen = function(event) {
 
 websocket.onclose = function () {
     console.log('Connection with Websocket Closed!');
+    setTimeout(connectToWebsocket, 100);
 };
 
 websocket.onerror = function (error) {
@@ -17,11 +24,14 @@ websocket.onerror = function (error) {
 
 websocket.onmessage = function (e) {
     let message = JSON.parse(e.data);
-    switch (message) {
+    if (AllowedMessages.indexOf(message.type) === -1) return;
+    switch (message.type) {
         case "MessageTypeList":
             AllowedMessages = message.value;
-            console.log(message.value);
-        break;
+            break;
+        case "UpdateMap":
+            map_data = message.value;
+            map_draw();
         default:
             console.log(message.type);
     }

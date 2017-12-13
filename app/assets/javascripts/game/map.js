@@ -830,7 +830,7 @@ function _map_init(node, width=1650, height=1080) {
     map_width = width;
     map_height = height;
     Object.keys(map_refrences.colors).forEach(function(name) {
-        map_data[name] = map_refrences.colors[name];//[255, 255, 255];
+        map_data[name] = [255, 255, 255];
     });
     map_load_();
 }
@@ -1141,8 +1141,13 @@ function map_click(event) {
     var rect = map_node.getBoundingClientRect();
     let x = event.clientX - rect.left;
     let y = event.clientY - rect.top;
-    console.log("Land: " + map_position_to_land(x/getScale(), y/getScale()) + "; X: " + x/getScale() + " Y: " + y/getScale());
-    map_draw_country(map_position_to_land(x/getScale(), y/getScale()), [Math.random() * 256, Math.random() * 256, Math.random() * 256]);
+    let message = {
+        'type': 'Click',
+        'message': map_position_to_land(x/getScale(), y/getScale())
+    };
+    websocket.send(JSON.stringify(message));
+    //console.log("Land: " + map_position_to_land(x/getScale(), y/getScale()) + "; X: " + x/getScale() + " Y: " + y/getScale());
+    //map_draw_country(map_position_to_land(x/getScale(), y/getScale()), [Math.random() * 256, Math.random() * 256, Math.random() * 256]);
 }
 
 function map_hover(event) {
