@@ -4,31 +4,31 @@
 
 $(document).ready(function () {
 
-    new Vue({
-        el: '#bar-1',
+    let barElement1 = new Vue({
+        el: "#bar-1",
         data: {
-            message: '11, 3'
+            message: "11, 3"
         }
     })
 
-    new Vue({
-        el: '#bar-2',
+    let barElement2 = new Vue({
+        el: "#bar-2",
         data: {
-            message: 'Aufrüsten'
+            message: "Aufrüsten"
         }
     })
 
-    new Vue({
-        el: '#bar-3',
+    let barElement3 = new Vue({
+        el: "#bar-3",
         data: {
-            message: '3'
+            message: "3"
         }
     })
 
-    new Vue({
-        el: '#message-1',
+    let message1 = new Vue({
+        el: "#message-1",
         data: {
-            message: 'The best game ! '
+            message: "The best game ! "
         }
     })
 
