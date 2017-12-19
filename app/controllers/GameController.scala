@@ -9,9 +9,10 @@ import akka.stream.Materializer
 import akka.actor._
 import scala.concurrent.Future
 
-import services.game.{SocketActor => GameSocketActor}
 import de.htwg.se.scala_risk.model.impl.{ World => ImplWorld }
 import de.htwg.se.scala_risk.controller.impl.{ GameLogic => ImplGameLogic }
+import services.game.{SocketActor => GameSocketActor}
+import services.game.GameManager
 import scala.collection.mutable._
 import models._
 import models.shared.GamesShared
@@ -25,15 +26,13 @@ import models.shared.GamesShared
 @Singleton
 class GameController @Inject() (cc: ControllerComponents) (implicit system: ActorSystem, mat: Materializer) extends AbstractController(cc) {
 
+  val actorSystem = ActorSystem("Risiko")
+
   /**
    * Create an action that responds with the [[Counter]]'s current
    * count. The result is plain text. This `Action` is mapped to
    * `GET /count` requests by an entry in the `routes` config file.
    */
-  val test: Array[String] = Array(
-    "SDFGHJKLOELKJHGFFG",
-    "WERTZUIOPPPPPOIZTD"
-  )
 
   def index = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index(GamesShared.getGames))
@@ -60,8 +59,6 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
                   case None => BadRequest("")
                   case Some(player) => {
                     gameModel.player += PlayerModel(player.mkString)
-                    val world = new ImplWorld()
-                    gameModel.gameLogic = Some(new ImplGameLogic(world))
 
                     println(GamesShared.getGames.toString)
                     println(player.mkString + " ist dem Spiel "
@@ -79,7 +76,10 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
             case Some(player) => {
               val playerList = ListBuffer[PlayerModel]()
               playerList += PlayerModel(player.mkString)
-              GamesShared.addGame(GameModel("mein Spiel", playerList, None))
+              val world = new ImplWorld()
+              val gameName = "mein Spiel"
+              GamesShared.addGame(GameModel(gameName, playerList, Some(
+                actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), gameName))))
 
               println(player.mkString + " hat ein Spiel gestartet")
 
@@ -108,7 +108,20 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
       case None => Left(Forbidden)
       case Some(user) => Right(ActorFlow.actorRef { out =>
         println("Connect received from: " + user)
-        Props(new GameSocketActor(out, user))
+        GamesShared.getGameWithPlayer(user) match {
+          case None => Props.empty
+          case Some(game) => {
+            println("Received a socket connection from Player: " + user)
+            game.gameManager match {
+              case None => Props.empty
+              case Some(gameManager) => {
+                val prop = Props(new GameSocketActor(out))
+                gameManager ! models.MessageModels.SetPlayer(prop, user)
+                prop
+              }
+            }
+          }
+        }
       })
     })
   }

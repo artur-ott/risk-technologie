@@ -1,8 +1,8 @@
 let AllowedMessages = [];
 let websocket;
 function connectToWebsocket() {
-    // websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
-    websocket = new WebSocket("ws://localhost:9000/game/socket");
+    websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
+    // websocket = new WebSocket("ws://localhost:9000/game/socket");
 }
 
 connectToWebsocket();

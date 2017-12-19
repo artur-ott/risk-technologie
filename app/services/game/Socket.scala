@@ -1,19 +1,28 @@
 package services.game
 
+import models.GameModel
+
 import akka.actor._
 import play.api.libs.json._
+import akka.actor.PoisonPill
+import scala.swing.Reactor
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, UpdateMap, Click, Unknown = Value
+  val MessageTypeList, UpdateMap, Close, Click, Unknown = Value
 
   def stringToValue(messageType: String):Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
 
-class SocketActor(out: ActorRef, player: String) extends Actor {
+class SocketActor(out: ActorRef) extends Actor with Reactor {
+    listenTo(context)
+
+    def reactor = {
+      case _ => println("bar")
+    }
+
     def receive = {
       case msg: String => {
-        println("Message received from: " + player)
         val json: JsValue = Json.parse(msg)
         (json \ "type").asOpt[String] match {
           case None => sendMessageTypes
@@ -21,7 +30,9 @@ class SocketActor(out: ActorRef, player: String) extends Actor {
             case None => println("No type: "+ msg + ", " + MessageTypes.stringToValue(msg))
             case Some(messageTypeValue) => messageTypeValue match {
               case MessageTypes.MessageTypeList => sendMessageTypes
+              case MessageTypes.Close => self ! PoisonPill
               case MessageTypes.Click => (json \ "message").asOpt[String].getOrElse("") // TODO: implement game logic
+
             }
           }
         }
@@ -33,4 +44,6 @@ class SocketActor(out: ActorRef, player: String) extends Actor {
       val value = "\"value\": [\"" + MessageTypes.values.mkString("\", \"") + "\"]"
       out ! ("{" + messageType + ", " + value + "}")
     }
+
+    def closeActor = self ! PoisonPill
   }
