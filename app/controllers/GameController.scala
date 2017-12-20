@@ -78,8 +78,9 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
               playerList += PlayerModel(player.mkString)
               val world = new ImplWorld()
               val gameName = "mein Spiel"
-              GamesShared.addGame(GameModel(gameName, playerList, Some(
-                actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), gameName))))
+              GamesShared.addGame(GameModel(gameName, playerList,
+                Some(actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), name=gameName.replaceAll("\\s", "")))
+              ))
 
               println(player.mkString + " hat ein Spiel gestartet")
 
@@ -107,7 +108,6 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
     Future.successful(request.session.get("user") match {
       case None => Left(Forbidden)
       case Some(user) => Right(ActorFlow.actorRef { out =>
-        println("Connect received from: " + user)
         GamesShared.getGameWithPlayer(user) match {
           case None => Props.empty
           case Some(game) => {

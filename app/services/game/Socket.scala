@@ -5,21 +5,23 @@ import models.GameModel
 import akka.actor._
 import play.api.libs.json._
 import akka.actor.PoisonPill
-import scala.swing.Reactor
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, UpdateMap, Close, Click, Unknown = Value
+  val MessageTypeList, Ping, UpdateMap, Close, Click, Unknown = Value
 
   def stringToValue(messageType: String):Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
 
-class SocketActor(out: ActorRef) extends Actor with Reactor {
-    listenTo(context)
+case class Message (messageType: String, message: String = "\"\"") {
+  def toJson: String = {
+    val m_type = "\"type\":\"" + messageType + "\""
+    val value = "\"value\": " + message
+    ("{" + m_type + ", " + value + "}")
+  }
+}
 
-    def reactor = {
-      case _ => println("bar")
-    }
+class SocketActor(out: ActorRef) extends Actor {
 
     def receive = {
       case msg: String => {
@@ -30,13 +32,14 @@ class SocketActor(out: ActorRef) extends Actor with Reactor {
             case None => println("No type: "+ msg + ", " + MessageTypes.stringToValue(msg))
             case Some(messageTypeValue) => messageTypeValue match {
               case MessageTypes.MessageTypeList => sendMessageTypes
-              case MessageTypes.Close => self ! PoisonPill
+              case MessageTypes.Ping => out ! Message("Ping").toJson
               case MessageTypes.Click => (json \ "message").asOpt[String].getOrElse("") // TODO: implement game logic
-
+              // TODO: startGame
             }
           }
         }
       }
+      case models.MessageModels.UpdateMap(map) => out ! Message("UpdateMap", map).toJson
     }
 
     def sendMessageTypes = {

@@ -830,7 +830,7 @@ function _map_init(node, width=1650, height=1080) {
     map_width = width;
     map_height = height;
     Object.keys(map_refrences.colors).forEach(function(name) {
-        map_data[name] = [255, 255, 255];
+        map_data[name] = {'color': [255, 255, 255], 'troops': 0};
     });
     map_load_();
 }
@@ -873,7 +873,7 @@ function map_draw() {
     map_ctx_map.drawImage(map_img_map, 0, 0, map_width, map_height);
     map_ctx_ref.drawImage(map_img_ref, 0, 0, map_width, map_height);
     Object.keys(map_data).forEach(function(name) {
-        map_draw_country(name, map_data[name]);
+        map_draw_country(name, map_data[name]['color'], map_data[name]['troops']);
     });
 }
 
