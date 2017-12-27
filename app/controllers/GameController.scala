@@ -115,9 +115,8 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
             game.gameManager match {
               case None => Props.empty
               case Some(gameManager) => {
-                val prop = Props(new GameSocketActor(out))
-                gameManager ! models.MessageModels.SetPlayer(prop, user)
-                prop
+                println("Socket connection created: " + user)
+                Props(new GameSocketActor(out, gameManager, user))
               }
             }
           }

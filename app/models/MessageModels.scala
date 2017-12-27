@@ -1,9 +1,10 @@
 package models
 
-import akka.actor.Props
+import akka.actor.ActorRef
 
 object MessageModels {
-    case class SetPlayer(prop:Props, user: String)
+    case class SetPlayer(playerRef: ActorRef, user: String)
     case class StartGame()
     case class UpdateMap(map: String)
+    case class SpreadTroops(player: String, troops: Int)
 }

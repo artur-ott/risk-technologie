@@ -19,28 +19,11 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         case _ => println("foo")
     }
 
-    def createPlayer(prop: Props, user: String) = {
-        this.getPlayerActorRef(user) match {
-            case None => playerActorRefs += ((user, context.actorOf(prop)))
-            case Some(child) => {
-                context.stop(child._2)
-                playerActorRefs - child
-                playerActorRefs += ((user, context.actorOf(prop)))
-            }
-        }
-    }
-
-    def startGame = gameLogic.startGame
-
-    def getPlayerActorRef(user:String):Option[(String, ActorRef)] = {
-        playerActorRefs.filter(child => child._1.equals(user)).headOption
-    }
-
     def update() {
         gameLogic.getStatus match {
             case Statuses.INITIALIZE_PLAYERS  =>  this.initializePlayers
             case Statuses.GAME_INITIALIZED => this.gameInitialized
-            case Statuses.PLAYER_SPREAD_TROOPS => 
+            case Statuses.PLAYER_SPREAD_TROOPS => spreadTroops
 
             case Statuses.NOT_ENOUGH_PLAYERS => {
                 println(players.size)
@@ -48,6 +31,23 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
 
             case _ => println("Update: " + gameLogic.getStatus)
         }
+    }
+
+    def createPlayer(playerRef: ActorRef, user: String) = {
+        this.getPlayerActorRef(user) match {
+            case None => playerActorRefs += ((user, playerRef))
+            case Some(child) => {
+                context.stop(child._2)
+                playerActorRefs - child
+                playerActorRefs += ((user, playerRef))
+            }
+        }
+    }
+
+    def startGame = if (playerActorRefs.length >= 2) gameLogic.startGame
+
+    def getPlayerActorRef(user:String):Option[(String, ActorRef)] = {
+        playerActorRefs.filter(child => child._1.equals(user)).headOption
     }
 
     def initializePlayers = {
@@ -69,6 +69,14 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         })
     }
 
+    def spreadTroops = {
+        val troops = gameLogic.getTroopsToSpread
+        val player = gameLogic.getCurrentPlayer._1
+
+        playerActorRefs.foreach(playerActorRef => {
+            playerActorRef._2 ! models.MessageModels.SpreadTroops(player, troops)
+        })
+    }
 
     def getMapdata: String = {
         val countries : scala.collection.mutable.ArrayBuffer[(String, String, Int, Int)] = gameLogic.getCountries
