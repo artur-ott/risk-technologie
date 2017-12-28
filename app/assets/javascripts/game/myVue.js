@@ -7,6 +7,8 @@ let barElement2;
 let barElement3;
 let message1;
 
+var Vue = require('vue');
+
 $(document).ready(function () {
 
     barElement1 = new Vue({
