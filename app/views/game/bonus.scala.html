@@ -1,0 +1,27 @@
+@additionalCss = {
+    <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/game.css")">
+}
+
+@additionalJs = {
+    <script src="@routes.Assets.versioned("javascripts/game/main.js")"></script>
+    <script src="@routes.Assets.versioned("/bower_components/webcomponentsjs/webcomponents-loader.js")"type="=text/javascript"></script>
+}
+
+@additionalHtml = {
+        <!-- See https://goo.gl/OOhYW5 -->
+    <link rel="manifest" href=@routes.Assets.versioned("/manifest.json")>
+    <link rel="import" href=@routes.Assets.versioned("/bower_components/scratch-card/scratch-card.html")>
+}
+
+@main("Risk Technologie- The Game! - Bonus", additionalCss, additionalJs, additionalHtml) {
+    <!-- das gescratche will ich auf dev haben :D . Das ist doch optional um polymer vorstellen. -->
+    <div class="mt-2 col-md-20"></div>  <!-- adding some margings -->
+
+    <scratch-card
+    background="@routes.Assets.versioned("images/scratch_background.png")"
+    foreground="@routes.Assets.versioned("images/scratch_foreground.png")"
+    percent=70
+    thickness=5g5
+    load>
+    </scratch-card>
+}

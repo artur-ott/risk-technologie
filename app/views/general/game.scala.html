@@ -14,6 +14,7 @@
         <!-- See https://goo.gl/OOhYW5 -->
     <link rel="manifest" href=@routes.Assets.versioned("/manifest.json")>
     <link rel="import" href=@routes.Assets.versioned("/src/polymer-risk-sample-app/polymer-custom-string.html")>
+    <link rel="import" href=@routes.Assets.versioned("/bower_components/scratch-card/scratch-card.html")>
 }
 
 @main("Risk Technologie- The Game!", additionalCss, additionalJs, additionalHtml) {
@@ -55,6 +56,7 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" target="_blank" href="@routes.GameController.description()">Spielbeschreibung</a>
                             <a class="dropdown-item" target="_blank" href="@routes.GameController.rules()">Spielregeln</a>
+                            <a class="dropdown-item" target="_blank" href="@routes.GameController.bonus()">Bonus</a>
                         </div>
                     </li>
                 </ul>

@@ -19,3 +19,5 @@ GET     /game                  controllers.GameController.game
 GET     /game/description      controllers.GameController.description
 
 GET     /game/rules            controllers.GameController.rules
+
+GET     /game/bonus            controllers.GameController.bonus

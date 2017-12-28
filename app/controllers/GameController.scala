@@ -90,4 +90,9 @@ class GameController @Inject() (cc: ControllerComponents) extends AbstractContro
   def rules = Action {
     Ok(views.html.game.rules())
   }
+
+  def bonus = Action {
+    Ok(views.html.game.bonus())
+  }
+
 }
