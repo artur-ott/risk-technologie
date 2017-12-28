@@ -2,6 +2,8 @@ package controllers
 
 import javax.inject._
 import play.api.mvc._
+import org.webjars.play.WebJarsUtil
+import play.api.i18n.{ I18nSupport, Messages }
 
 import play.api.libs.streams.ActorFlow
 import akka.actor.ActorSystem
@@ -11,7 +13,7 @@ import scala.concurrent.Future
 
 import de.htwg.se.scala_risk.model.impl.{ World => ImplWorld }
 import de.htwg.se.scala_risk.controller.impl.{ GameLogic => ImplGameLogic }
-import services.game.{SocketActor => GameSocketActor}
+import services.game.{ SocketActor => GameSocketActor }
 import services.game.GameManager
 import scala.collection.mutable._
 import models._
@@ -24,7 +26,7 @@ import models.shared.GamesShared
  * object is injected by the Guice dependency injection system.
  */
 @Singleton
-class GameController @Inject() (cc: ControllerComponents) (implicit system: ActorSystem, mat: Materializer) extends AbstractController(cc) {
+class GameController @Inject() (cc: ControllerComponents)(implicit system: ActorSystem, mat: Materializer, webJarsUtil: WebJarsUtil, assets: AssetsFinder) extends AbstractController(cc) with I18nSupport {
 
   val actorSystem = ActorSystem("Risiko")
 
@@ -47,7 +49,9 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
           val gameSelected = post.get("game_selected").getOrElse(List[String]("-1")).mkString;
           if (!GamesShared.getGames.exists(_.id.equals(gameSelected))) {
             // No game found
-            Redirect(routes.GameController.index(), 302)
+            // TODO: kommentare entfernen
+            //Redirect(routes.game.GameController.index(), 302)
+            BadRequest("")
           } else {
             GamesShared.getGames.filter(_.id.equals(gameSelected)).headOption match {
               // No game found
@@ -63,7 +67,9 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
                     println(GamesShared.getGames.toString)
                     println(player.mkString + " ist dem Spiel "
                       + gameSelected + " beigetreten")
-                    Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
+                    // TODO: kommentare entfernen
+                    //Redirect(routes.game.GameController.game(), 302).withSession("user" -> player.mkString)
+                    BadRequest("")
                   }
                 }
               }
@@ -79,12 +85,14 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
               val world = new ImplWorld()
               val gameName = "mein Spiel"
               GamesShared.addGame(GameModel(gameName, playerList,
-                Some(actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), name=gameName.replaceAll("\\s", "")))
+                Some(actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), name = gameName.replaceAll("\\s", "")))
               ))
 
               println(player.mkString + " hat ein Spiel gestartet")
 
-              Redirect(routes.GameController.game(), 302).withSession("user" -> player.mkString)
+              // TODO: kommentare entfernen
+              //Redirect(routes.game.GameController.game(), 302).withSession("user" -> player.mkString)
+              BadRequest("")
             }
           }
         }
@@ -92,15 +100,15 @@ class GameController @Inject() (cc: ControllerComponents) (implicit system: Acto
     }
   }
 
-  def game = Action {
+  def game = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.general.game())
   }
 
-  def description = Action {
+  def description = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.game.description())
   }
 
-  def rules = Action {
+  def rules = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.game.rules())
   }
 
