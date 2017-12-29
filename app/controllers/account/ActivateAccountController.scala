@@ -1,4 +1,6 @@
-package controllers
+package controllers.account
+
+import controllers._
 
 import java.net.URLDecoder
 import java.util.UUID
@@ -55,8 +57,8 @@ class ActivateAccountController @Inject() (
             subject = Messages("email.activate.account.subject"),
             from = Messages("email.from"),
             to = Seq(decodedEmail),
-            bodyText = Some(views.txt.emails.activateAccount(user, url).body),
-            bodyHtml = Some(views.html.emails.activateAccount(user, url).body)
+            bodyText = Some(views.txt.account.emails.activateAccount(user, url).body),
+            bodyHtml = Some(views.html.account.emails.activateAccount(user, url).body)
           ))
           result
         }

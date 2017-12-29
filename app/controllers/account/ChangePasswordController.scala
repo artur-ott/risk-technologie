@@ -1,4 +1,6 @@
-package controllers
+package controllers.account
+
+import controllers._
 
 import javax.inject.Inject
 
@@ -48,7 +50,7 @@ class ChangePasswordController @Inject() (
    */
   def view = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)) {
     implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-      Ok(views.html.changePassword(ChangePasswordForm.form, request.identity))
+      Ok(views.html.account.changePassword(ChangePasswordForm.form, request.identity))
   }
 
   /**
@@ -59,7 +61,7 @@ class ChangePasswordController @Inject() (
   def submit = silhouette.SecuredAction(WithProvider[DefaultEnv#A](CredentialsProvider.ID)).async {
     implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
       ChangePasswordForm.form.bindFromRequest.fold(
-        form => Future.successful(BadRequest(views.html.changePassword(form, request.identity))),
+        form => Future.successful(BadRequest(views.html.account.changePassword(form, request.identity))),
         password => {
           val (currentPassword, newPassword) = password
           val credentials = Credentials(request.identity.email.getOrElse(""), currentPassword)

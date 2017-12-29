@@ -1,3 +1,5 @@
+@import views.html._
+
 @import play.api.i18n.Messages
 @import play.api.mvc.RequestHeader
 @import play.twirl.api.Html
@@ -13,7 +15,7 @@
             <p>@messages("activate.account.text1")</p>
             <p><b>@email</b></p>
             <p>@messages("activate.account.text2")</p>
-            <p>@Html(messages("activate.account.text3", controllers.routes.ActivateAccountController.send(helper.urlEncode(email))))</p>
+            <p>@Html(messages("activate.account.text3", controllers.account.routes.ActivateAccountController.send(helper.urlEncode(email))))</p>
         </div>
     </fieldset>
 }

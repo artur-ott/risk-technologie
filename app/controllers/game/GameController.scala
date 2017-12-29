@@ -1,14 +1,19 @@
-package controllers
+package controllers.game
+
+import controllers._
 
 import javax.inject._
 import play.api.mvc._
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.{ I18nSupport, Messages }
+import utils.auth.DefaultEnv
 
 import play.api.libs.streams.ActorFlow
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.actor._
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
+import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
 import scala.concurrent.Future
 
 import de.htwg.se.scala_risk.model.impl.{ World => ImplWorld }
@@ -26,7 +31,7 @@ import models.shared.GamesShared
  * object is injected by the Guice dependency injection system.
  */
 @Singleton
-class GameController @Inject() (cc: ControllerComponents)(implicit system: ActorSystem, mat: Materializer, webJarsUtil: WebJarsUtil, assets: AssetsFinder) extends AbstractController(cc) with I18nSupport {
+class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(implicit system: ActorSystem, mat: Materializer, webJarsUtil: WebJarsUtil, assets: AssetsFinder) extends AbstractController(cc) with I18nSupport {
 
   val actorSystem = ActorSystem("Risiko")
 
@@ -36,14 +41,14 @@ class GameController @Inject() (cc: ControllerComponents)(implicit system: Actor
    * `GET /count` requests by an entry in the `routes` config file.
    */
 
-  def index = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index(GamesShared.getGames))
+  def index = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    Future.successful(Ok(views.html.game.index(request.identity, GamesShared.getGames)))
   }
 
-  def start = Action { implicit request: Request[AnyContent] =>
+  def start = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
     request.body.asFormUrlEncoded match {
       // No request
-      case None => BadRequest("")
+      case None => Future.successful(BadRequest(""))
       case Some(post) => {
         if (post.contains("game_selected")) {
           val gameSelected = post.get("game_selected").getOrElse(List[String]("-1")).mkString;
@@ -51,16 +56,16 @@ class GameController @Inject() (cc: ControllerComponents)(implicit system: Actor
             // No game found
             // TODO: kommentare entfernen
             //Redirect(routes.game.GameController.index(), 302)
-            BadRequest("")
+            Future.successful(BadRequest(""))
           } else {
             GamesShared.getGames.filter(_.id.equals(gameSelected)).headOption match {
               // No game found
-              case None => BadRequest("")
+              case None => Future.successful(BadRequest(""))
               case Some(gameModel) => {
 
                 post.get("player_name") match {
                   // No player found
-                  case None => BadRequest("")
+                  case None => Future.successful(BadRequest(""))
                   case Some(player) => {
                     gameModel.player += PlayerModel(player.mkString)
 
@@ -69,7 +74,7 @@ class GameController @Inject() (cc: ControllerComponents)(implicit system: Actor
                       + gameSelected + " beigetreten")
                     // TODO: kommentare entfernen
                     //Redirect(routes.game.GameController.game(), 302).withSession("user" -> player.mkString)
-                    BadRequest("")
+                    Future.successful(BadRequest(""))
                   }
                 }
               }
@@ -78,7 +83,7 @@ class GameController @Inject() (cc: ControllerComponents)(implicit system: Actor
         } else {
           post.get("player_name") match {
             // No player found
-            case None => BadRequest("")
+            case None => Future.successful(BadRequest(""))
             case Some(player) => {
               val playerList = ListBuffer[PlayerModel]()
               playerList += PlayerModel(player.mkString)
@@ -92,7 +97,7 @@ class GameController @Inject() (cc: ControllerComponents)(implicit system: Actor
 
               // TODO: kommentare entfernen
               //Redirect(routes.game.GameController.game(), 302).withSession("user" -> player.mkString)
-              BadRequest("")
+              Future.successful(BadRequest(""))
             }
           }
         }
@@ -100,16 +105,16 @@ class GameController @Inject() (cc: ControllerComponents)(implicit system: Actor
     }
   }
 
-  def game = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.general.game())
+  def game = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    Future.successful(Ok(views.html.game.game()))
   }
 
-  def description = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.game.description())
+  def description = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    Future.successful(Ok(views.html.game.description()))
   }
 
-  def rules = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.game.rules())
+  def rules = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    Future.successful(Ok(views.html.game.rules()))
   }
 
   def socket = WebSocket.acceptOrResult[String, String] { request =>

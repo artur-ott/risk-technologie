@@ -2,28 +2,29 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET         /                                controllers.ApplicationController.index
-GET         /signOut                         controllers.ApplicationController.signOut
-GET         /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
+# Account
+GET         /signOut                         controllers.account.SignInController.signOut
+GET         /authenticate/:provider          controllers.account.SocialAuthController.authenticate(provider)
 
-GET         /signUp                          controllers.SignUpController.view
-POST        /signUp                          controllers.SignUpController.submit
+GET         /signUp                          controllers.account.SignUpController.view
+POST        /signUp                          controllers.account.SignUpController.submit
 
-GET         /signIn                          controllers.SignInController.view
-POST        /signIn                          controllers.SignInController.submit
+GET         /signIn                          controllers.account.SignInController.view
+POST        /signIn                          controllers.account.SignInController.submit
 
-GET         /password/forgot                 controllers.ForgotPasswordController.view
-POST        /password/forgot                 controllers.ForgotPasswordController.submit
-GET         /password/reset/:token           controllers.ResetPasswordController.view(token: java.util.UUID)
-POST        /password/reset/:token           controllers.ResetPasswordController.submit(token: java.util.UUID)
-GET         /password/change                 controllers.ChangePasswordController.view
-POST        /password/change                 controllers.ChangePasswordController.submit
+GET         /password/forgot                 controllers.account.ForgotPasswordController.view
+POST        /password/forgot                 controllers.account.ForgotPasswordController.submit
+GET         /password/reset/:token           controllers.account.ResetPasswordController.view(token: java.util.UUID)
+POST        /password/reset/:token           controllers.account.ResetPasswordController.submit(token: java.util.UUID)
+GET         /password/change                 controllers.account.ChangePasswordController.view
+POST        /password/change                 controllers.account.ChangePasswordController.submit
 
-POST        /startGame               			controllers.GameController.start
+GET         /account/email/:email            controllers.account.ActivateAccountController.send(email: String)
+GET         /account/activate/:token         controllers.account.ActivateAccountController.activate(token: java.util.UUID)
 
-GET         /account/email/:email            controllers.ActivateAccountController.send(email: String)
-GET         /account/activate/:token         controllers.ActivateAccountController.activate(token: java.util.UUID)
+# Game
+GET         /                                controllers.game.GameController.index
+POST        /startGame                       controllers.game.GameController.start
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                    controllers.Assets.versioned(file)

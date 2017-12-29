@@ -1,4 +1,6 @@
-package controllers
+package controllers.account
+
+import controllers._
 
 import java.util.UUID
 import javax.inject.Inject
@@ -51,7 +53,7 @@ class ResetPasswordController @Inject() (
    */
   def view(token: UUID) = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     authTokenService.validate(token).map {
-      case Some(_) => Ok(views.html.resetPassword(ResetPasswordForm.form, token))
+      case Some(_) => Ok(views.html.account.resetPassword(ResetPasswordForm.form, token))
       case None => Redirect(routes.SignInController.view()).flashing("error" -> Messages("invalid.reset.link"))
     }
   }
@@ -66,7 +68,7 @@ class ResetPasswordController @Inject() (
     authTokenService.validate(token).flatMap {
       case Some(authToken) =>
         ResetPasswordForm.form.bindFromRequest.fold(
-          form => Future.successful(BadRequest(views.html.resetPassword(form, token))),
+          form => Future.successful(BadRequest(views.html.account.resetPassword(form, token))),
           password => userService.retrieve(authToken.userID).flatMap {
             case Some(user) if user.loginInfo.providerID == CredentialsProvider.ID =>
               val passwordInfo = passwordHasherRegistry.current.hash(password)

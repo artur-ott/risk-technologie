@@ -1,4 +1,6 @@
-package controllers
+package controllers.account
+
+import controllers._
 
 import javax.inject.Inject
 
@@ -45,7 +47,7 @@ class ForgotPasswordController @Inject() (
    * @return The result to display.
    */
   def view = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
-    Future.successful(Ok(views.html.forgotPassword(ForgotPasswordForm.form)))
+    Future.successful(Ok(views.html.account.forgotPassword(ForgotPasswordForm.form)))
   }
 
   /**
@@ -58,7 +60,7 @@ class ForgotPasswordController @Inject() (
    */
   def submit = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     ForgotPasswordForm.form.bindFromRequest.fold(
-      form => Future.successful(BadRequest(views.html.forgotPassword(form))),
+      form => Future.successful(BadRequest(views.html.account.forgotPassword(form))),
       email => {
         val loginInfo = LoginInfo(CredentialsProvider.ID, email)
         val result = Redirect(routes.SignInController.view()).flashing("info" -> Messages("reset.email.sent"))
@@ -71,8 +73,8 @@ class ForgotPasswordController @Inject() (
                 subject = Messages("email.reset.password.subject"),
                 from = Messages("email.from"),
                 to = Seq(email),
-                bodyText = Some(views.txt.emails.resetPassword(user, url).body),
-                bodyHtml = Some(views.html.emails.resetPassword(user, url).body)
+                bodyText = Some(views.txt.account.emails.resetPassword(user, url).body),
+                bodyHtml = Some(views.html.account.emails.resetPassword(user, url).body)
               ))
               result
             }

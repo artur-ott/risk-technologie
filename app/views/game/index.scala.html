@@ -1,3 +1,5 @@
+@import views.html._
+
 @import models.GameModel
 @import play.api.mvc.RequestHeader
 @import org.webjars.play.WebJarsUtil
@@ -5,17 +7,17 @@
 @import play.api.i18n.Messages
 @import play.twirl.api.Html
 
-@(gameModels: List[GameModel])(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+@(user: models.User, gameModels: List[GameModel])(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 
 
 @additionalJs = {
     <script src="@assets.path("javascripts/index.js")" type="text/javascript"></script>
 }
 
-@main("Benutzer", None, Html(""), additionalJs) {
+@main("Benutzer", Some(user), Html(""), additionalJs) {
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
-            @helper.form(controllers.routes.GameController.start) {
+            @helper.form(controllers.game.routes.GameController.start) {
                 @helper.CSRF.formField
                 <div class="form-group">
                     <label for="player_name">Spieler Namen:</label>

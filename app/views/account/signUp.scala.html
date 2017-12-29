@@ -1,3 +1,5 @@
+@import views.html._
+
 @import play.api.data.Form
 @import play.api.i18n.Messages
 @import play.api.mvc.RequestHeader
@@ -11,7 +13,7 @@
 @main(messages("sign.up.title")) {
     <fieldset class="col-md-6 col-md-offset-3">
         <legend>@messages("sign.up.account")</legend>
-        @helper.form(action = controllers.routes.SignUpController.submit()) {
+        @helper.form(action = controllers.account.routes.SignUpController.submit()) {
             @helper.CSRF.formField
             @b3.text(signUpForm("firstName"), '_hiddenLabel -> messages("first.name"), 'placeholder -> messages("first.name"), 'class -> "form-control input-lg")
             @b3.text(signUpForm("lastName"), '_hiddenLabel -> messages("last.name"), 'placeholder -> messages("last.name"), 'class -> "form-control input-lg")
@@ -23,7 +25,7 @@
                 </div>
             </div>
             <div class="sign-in-now">
-                <p>@messages("already.a.member") <a href="@controllers.routes.SignInController.view">@messages("sign.in.now")</a></p>
+                <p>@messages("already.a.member") <a href="@controllers.account.routes.SignInController.view">@messages("sign.in.now")</a></p>
             </div>
         }
     </fieldset>

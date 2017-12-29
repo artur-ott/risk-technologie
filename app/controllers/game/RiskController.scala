@@ -1,4 +1,6 @@
-package controllers
+package controllers.game
+
+import controllers._
 
 import javax.inject._
 import play.api.mvc._
