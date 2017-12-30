@@ -90,7 +90,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       val colorR = ((colorInt / 256) / 256) % 256
       (country._1, country._2, country._3, "[" + colorR + ", " + colorG + ", " + colorB + "]")
     })
-    var sb: StringBuilder = new StringBuilder
+    val sb: StringBuilder = new StringBuilder
 
     val newline = "\n"
     sb.append("{" + newline)
@@ -103,11 +103,11 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       sb.append("\t}," + newline)
     })
 
-    sb = removeLastChar(sb)
+    val sb_without_last = removeLastChar(sb)
 
-    sb.append("}")
+    sb_without_last.append("}")
 
-    sb.toString()
+    sb_without_last.toString()
   }
 
   def removeLastChar(stringBuilder: StringBuilder): StringBuilder = {
