@@ -12,16 +12,16 @@ import play.api.libs.streams.ActorFlow
 import akka.stream.Materializer
 import akka.actor._
 import com.mohiva.play.silhouette.api.actions.SecuredRequest
-import com.mohiva.play.silhouette.api.{ LogoutEvent, Silhouette }
+import com.mohiva.play.silhouette.api.{ LogoutEvent, HandlerResult, Silhouette }
 import scala.concurrent.Future
 import scala.collection.mutable.ListBuffer
 
 import de.htwg.se.scala_risk.model.impl.{ World => ImplWorld }
 import de.htwg.se.scala_risk.controller.impl.{ GameLogic => ImplGameLogic }
-import services.game.{ SocketActor => GameSocketActor }
-import services.game.GameManager
+import services.game.{ SocketActor => GameSocketActor, GameManager }
 import models.shared.GamesShared
 import models._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  */
@@ -41,70 +41,55 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
   }
 
   def start = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-    request.body.asFormUrlEncoded match {
-      // No request
-      case None => Future.successful(BadRequest(""))
-      case Some(post) => {
-        if (post.contains("game_selected")) {
-          selectedGame(post.get("game_selected").getOrElse(List[String]("-1")).mkString)
-        } else {
-          if (post.contains("game_name")) {
-            selectedGame(post.get("game_name").getOrElse(List[String]("-1")).mkString)
+    Future.successful(
+      request.body.asFormUrlEncoded match {
+        // No request
+        case None => BadRequest("")
+        case Some(post) => {
+          if (post.contains("game_selected")) {
+            selectedGame(request.identity, post.get("game_selected").getOrElse(List[String]("-1")).mkString)
           } else {
-            Future.successful(BadRequest(""))
+            if (post.contains("game_name")) {
+              createGame(request.identity, post.get("game_name").getOrElse(List[String]("-1")).mkString)
+            } else {
+              BadRequest("")
+            }
           }
         }
       }
-    }
+    )
   }
 
-  private[this] def createGame(gameName: String): Future[Result] = {
-    if (gameName.equals("-1") || gameName.length == 0) Future.successful(BadRequest(""))
+  private[this] def createGame(user: User, gameName: String): Result = {
+    if (gameName.equals("-1") || gameName.length == 0) BadRequest("")
     else {
       val playerList = ListBuffer[PlayerModel]()
-      playerList += PlayerModel("player.mkString")
+      playerList += PlayerModel(user.userID, user.email.getOrElse(""))
       val world = new ImplWorld()
-      val gameName = "mein Spiel"
       GamesShared.addGame(GameModel(gameName, playerList,
         Some(actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), name = gameName.replaceAll("\\s", "")))
       ))
 
-      println("player.mkString" + " hat ein Spiel gestartet")
+      println(user.email.getOrElse("") + " hat ein Spiel gestartet")
 
-      // TODO: kommentare entfernen
-      //Redirect(routes.game.GameController.game(), 302).withSession("user" -> player.mkString)
-      Future.successful(BadRequest(""))
+      Redirect(routes.GameController.game(), 302)
     }
   }
 
-  private[this] def selectedGame(gameSelected: String): Future[Result] = {
+  private[this] def selectedGame(user: User, gameSelected: String): Result = {
     if (!GamesShared.getGames.exists(_.id.equals(gameSelected))) {
-      // No game found
-      // TODO: kommentare entfernen
-      //Redirect(routes.game.GameController.index(), 302)
-      Future.successful(BadRequest(""))
+      Redirect(routes.GameController.index(), 302)
     } else {
       GamesShared.getGames.filter(_.id.equals(gameSelected)).headOption match {
         // No game found
-        case None => Future.successful(BadRequest(""))
+        case None => BadRequest("")
         case Some(gameModel) => {
+          gameModel.player += PlayerModel(user.userID, user.email.getOrElse(""))
 
-          // TODO: add player
-          /*post.get("player_name") match {
-            // No player found
-            case None => Future.successful(BadRequest(""))
-            case Some(player) => {
-              gameModel.player += PlayerModel(player.mkString)
-
-              println(GamesShared.getGames.toString)
-              println(player.mkString + " ist dem Spiel "
-                + gameSelected + " beigetreten")
-              // TODO: kommentare entfernen
-              //Redirect(routes.game.GameController.game(), 302).withSession("user" -> player.mkString)
-              Future.successful(BadRequest(""))
-            }
-          }*/
-          Future.successful(BadRequest(""))
+          println(GamesShared.getGames.toString)
+          println(user.email.getOrElse("") + " ist dem Spiel "
+            + gameSelected + " beigetreten")
+          Redirect(routes.GameController.game(), 302)
         }
       }
     }
@@ -123,23 +108,26 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
   }
 
   def socket = WebSocket.acceptOrResult[String, String] { request =>
-    Future.successful(request.session.get("user") match {
-      case None => Left(Forbidden)
-      case Some(user) => Right(ActorFlow.actorRef { out =>
-        GamesShared.getGameWithPlayer(user) match {
+    implicit val req = Request(request, AnyContentAsEmpty)
+    silhouette.SecuredRequestHandler { securedRequest =>
+      Future.successful(HandlerResult(Ok, Some(securedRequest.identity)))
+    }.map {
+      case HandlerResult(r, Some(user)) => Right(ActorFlow.actorRef { out =>
+        GamesShared.getGameWithPlayer(user.userID) match {
           case None => Props.empty
           case Some(game) => {
-            println("Received a socket connection from Player: " + user)
+            println("Received a socket connection from Player: " + user.email.getOrElse(""))
             game.gameManager match {
               case None => Props.empty
               case Some(gameManager) => {
-                println("Socket connection created: " + user)
-                Props(new GameSocketActor(out, gameManager, user))
+                println("Socket connection created: " + user.email.getOrElse(""))
+                Props(new GameSocketActor(out, gameManager, user.userID))
               }
             }
           }
         }
       })
-    })
+      case HandlerResult(r, None) => Left(Forbidden)
+    }
   }
 }

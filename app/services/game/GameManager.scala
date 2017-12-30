@@ -1,5 +1,7 @@
 package services.game
 
+import java.util.UUID
+
 import scala.collection.mutable._
 import akka.actor._
 
@@ -10,11 +12,11 @@ import de.htwg.se.scala_risk.util.Statuses
 import de.htwg.se.scala_risk.controller.GameLogic
 
 class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = ListBuffer()) extends Actor with TObserver {
-  var playerActorRefs: ListBuffer[(String, ActorRef)] = ListBuffer();
+  var playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer();
   gameLogic.add(this)
 
   def receive = {
-    case models.MessageModels.SetPlayer(prop, user) => createPlayer(prop, user)
+    case models.MessageModels.SetPlayer(prop, uuid) => createPlayer(prop, uuid)
     case models.MessageModels.StartGame => startGame
     case _ => println("foo")
   }
@@ -33,21 +35,21 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     }
   }
 
-  def createPlayer(playerRef: ActorRef, user: String) = {
-    this.getPlayerActorRef(user) match {
-      case None => playerActorRefs += ((user, playerRef))
+  def createPlayer(playerRef: ActorRef, uuid: UUID) = {
+    this.getPlayerActorRef(uuid) match {
+      case None => playerActorRefs += ((uuid, playerRef))
       case Some(child) => {
         context.stop(child._2)
         playerActorRefs - child
-        playerActorRefs += ((user, playerRef))
+        playerActorRefs += ((uuid, playerRef))
       }
     }
   }
 
   def startGame() = if (playerActorRefs.length >= 2) gameLogic.startGame
 
-  def getPlayerActorRef(user: String): Option[(String, ActorRef)] = {
-    playerActorRefs.filter(child => child._1.equals(user)).headOption
+  def getPlayerActorRef(uuid: UUID): Option[(UUID, ActorRef)] = {
+    playerActorRefs.filter(child => child._1.equals(uuid)).headOption
   }
 
   def initializePlayers() = {
@@ -57,7 +59,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         case None =>
         case Some(color) => players.lift(6 - gameLogic.getAvailableColors.size) match {
           case None =>
-          case Some(player) => gameLogic.setPlayer((player.name, color))
+          case Some(player) => gameLogic.setPlayer((player.uuid.toString, color))
         }
       }
     }

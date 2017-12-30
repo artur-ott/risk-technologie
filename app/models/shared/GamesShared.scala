@@ -2,6 +2,7 @@ package models.shared
 
 import models.GameModel
 import scala.collection.mutable._
+import java.util.UUID
 
 object GamesShared {
   private val games: ListBuffer[GameModel] = new ListBuffer()
@@ -12,12 +13,7 @@ object GamesShared {
 
   def removeGame(id: String) = this.games --= this.games.filter(_.id.equals(id))
 
-  def getGameWithPlayer(name: String): Option[GameModel] = {
-    val game = this.games.filter(e => e.player.exists(p => p.name.equals(name)))
-    if (game.length > 0) {
-      Some(game.head)
-    } else {
-      None
-    }
+  def getGameWithPlayer(uuid: UUID): Option[GameModel] = {
+    this.games.filter(e => e.player.exists(p => p.uuid.equals(uuid))).headOption
   }
 }

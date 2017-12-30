@@ -5,6 +5,7 @@ import models.GameModel
 import akka.actor._
 import play.api.libs.json._
 import akka.actor.PoisonPill
+import java.util.UUID
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
@@ -21,9 +22,9 @@ case class Message(messageType: String, message: String = "\"\"") {
   }
 }
 
-class SocketActor(out: ActorRef, gameManager: ActorRef, user: String) extends Actor {
+class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Actor {
   override def preStart(): Unit = {
-    gameManager ! models.MessageModels.SetPlayer(self, user)
+    gameManager ! models.MessageModels.SetPlayer(self, uuid)
     this.sendMessageTypes
   }
 

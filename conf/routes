@@ -25,6 +25,8 @@ GET         /account/activate/:token         controllers.account.ActivateAccount
 # Game
 GET         /                                controllers.game.GameController.index
 POST        /startGame                       controllers.game.GameController.start
+GET         /game                            controllers.game.GameController.game
+GET         /game/socket                     controllers.game.GameController.socket
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                    controllers.Assets.versioned(file)

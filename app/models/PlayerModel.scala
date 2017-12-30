@@ -1,5 +1,5 @@
 package models
 
-import akka.actor.ActorRef
+import java.util.UUID
 
-case class PlayerModel(name: String)
+case class PlayerModel(uuid: UUID, name: String)

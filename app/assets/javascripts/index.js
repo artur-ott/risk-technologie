@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $("#player_name").keyup(function(e) {
+    $("#game_name").keyup(function(e) {
         if ($(this).val().length > 0) {
             $("#play_game").removeAttr("disabled");
         } else {
