@@ -2,4 +2,4 @@ package models
 
 import akka.actor.ActorRef
 
-case class PlayerModel (name: String)
+case class PlayerModel(name: String)
