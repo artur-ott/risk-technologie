@@ -81,8 +81,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def getMapdata: String = {
-    val countries: scala.collection.mutable.ArrayBuffer[(String, String, Int, Int)] = gameLogic.getCountries
-    val countries_t = countries.map(country => {
+    val countriesList: scala.collection.mutable.ArrayBuffer[(String, String, Int, Int)] = gameLogic.getCountries
+    val countries = countriesList.map(country => {
       val colorHex = Integer.toHexString(gameLogic.getOwnerColor(country._2)).drop(1).drop(1)
       val colorInt = Integer.parseInt(colorHex, 16)
       val colorB = colorInt % 256
@@ -95,7 +95,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     val newline = "\n"
     sb.append("{" + newline)
 
-    countries_t.foreach(country => {
+    countries.foreach(country => {
       sb.append("\t\"" + country._1 + "\": {")
       sb.append(newline + "\t\t")
       sb.append("\"color\": " + country._4 + "," + newline + "\t\t")
@@ -103,11 +103,11 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       sb.append("\t}," + newline)
     })
 
-    val sb_without_last = removeLastChar(sb)
+    val sbWithoutLast = removeLastChar(sb)
 
-    sb_without_last.append("}")
+    sbWithoutLast.append("}")
 
-    sb_without_last.toString()
+    sbWithoutLast.toString()
   }
 
   def removeLastChar(stringBuilder: StringBuilder): StringBuilder = {
