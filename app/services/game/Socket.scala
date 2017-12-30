@@ -4,7 +4,6 @@ import models.GameModel
 
 import akka.actor._
 import play.api.libs.json._
-import akka.actor.PoisonPill
 import java.util.UUID
 
 object MessageTypes extends Enumeration {
@@ -16,9 +15,9 @@ object MessageTypes extends Enumeration {
 
 case class Message(messageType: String, message: String = "\"\"") {
   def toJson: String = {
-    val m_type = "\"type\":\"" + messageType + "\""
-    val value = "\"value\": " + message
-    ("{" + m_type + ", " + value + "}")
+    val messageTypeJson = "\"type\":\"" + messageType + "\""
+    val messageJson = "\"value\": " + message
+    ("{" + messageTypeJson + ", " + messageJson + "}")
   }
 }
 
