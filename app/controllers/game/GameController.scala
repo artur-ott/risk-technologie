@@ -47,10 +47,12 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
       case Some(post) => {
         if (post.contains("game_selected")) {
           selectedGame(post.get("game_selected").getOrElse(List[String]("-1")).mkString)
-        } else if (post.contains("game_name")) {
-          selectedGame(post.get("game_name").getOrElse(List[String]("-1")).mkString)
         } else {
-          Future.successful(BadRequest(""))
+          if (post.contains("game_name")) {
+            selectedGame(post.get("game_name").getOrElse(List[String]("-1")).mkString)
+          } else {
+            Future.successful(BadRequest(""))
+          }
         }
       }
     }
