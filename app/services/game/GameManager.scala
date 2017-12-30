@@ -12,7 +12,7 @@ import de.htwg.se.scala_risk.util.Statuses
 import de.htwg.se.scala_risk.controller.GameLogic
 
 class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = ListBuffer()) extends Actor with TObserver {
-  var playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer();
+  val playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer();
   gameLogic.add(this)
 
   def receive = {
