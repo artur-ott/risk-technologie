@@ -4,22 +4,22 @@ let websocketInterval;
 function connectToWebsocket() {
     websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
     // websocket = new WebSocket("ws://localhost:9000/game/socket");
-    websocket.setTimeout
+    websocket.setTimeout;
 }
 
 connectToWebsocket();
 
 websocket.onopen = function(event) {
     console.log("Connected to Websocket");
-}
+};
 
 websocket.onclose = function () {
-    console.log('Connection with Websocket Closed!');
+    console.log("Connection with Websocket Closed!");
     clearInterval(websocketInterval);
 };
 
 websocket.onerror = function (error) {
-    console.log('Error in Websocket Occured: ' + JSON.stringify(error));
+    console.log("Error in Websocket Occured: " + JSON.stringify(error));
 };
 
 websocket.onmessage = function (e) {
@@ -29,10 +29,12 @@ websocket.onmessage = function (e) {
     switch (message.type) {
         case "MessageTypeList":
             AllowedMessages = message.value;
-            websocket.send('{"type": "StartGame"}');
+            websocket.send("{\"type\": \"StartGame\"}");
             clearInterval(websocketInterval);
             websocketInterval = setInterval(function(){
-                websocket.send('{"type": "Ping"}');
+                if (websocket.readyState == websocket.OPEN) {  
+                    websocket.send("{\"type\": \"Ping\"}");
+                }
             }, 5000);
             break;
         case "Ping":
