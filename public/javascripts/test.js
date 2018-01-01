@@ -1,3 +1,9 @@
+let logging = "";
+function log(text) {
+    logging += text;
+    logging +="\n";
+}
+
 let AllowedMessages = ["MessageTypeList"];
 let websocket;
 let websocketInterval;
@@ -10,32 +16,28 @@ function connectToWebsocket() {
 connectToWebsocket();
 
 websocket.onopen = function(event) {
-    console.log("Connected to Websocket");
+    log("Connected to Websocket");
 };
 
 websocket.onclose = function () {
-    console.log("Connection with Websocket Closed!");
+    log("Connection with Websocket Closed!");
     clearInterval(websocketInterval);
 };
 
 websocket.onerror = function (error) {
-    console.log("Error in Websocket Occured: " + JSON.stringify(error));
+    log("Error in Websocket Occured: " + JSON.stringify(error));
 };
 
 websocket.onmessage = function (e) {
     let message = JSON.parse(e.data);
-    console.log(e.data);
-    if (AllowedMessages.indexOf(message.type) === -1) return;
+    log(e.data);
+    if (AllowedMessages.indexOf(message.type) === -1) {
+        return;
+    }
     switch (message.type) {
         case "MessageTypeList":
             AllowedMessages = message.value;
-            websocket.send("{\"type\": \"StartGame\"}");
-            clearInterval(websocketInterval);
-            websocketInterval = setInterval(function(){
-                if (websocket.readyState == websocket.OPEN) {  
-                    websocket.send("{\"type\": \"Ping\"}");
-                }
-            }, 5000);
+            startGame();
             break;
         case "Ping":
             break;
@@ -46,9 +48,19 @@ websocket.onmessage = function (e) {
         case "SpreadTroops":
             let player = message.value.player;
             let troops = message.value.troops;
-            console.log("player: " + player + " troops: " + troops);
+            log("player: " + player + " troops: " + troops);
             break;
         default:
-            console.log(message.type);
+            log(message.type);
     }
 };
+
+function startGame() {
+    websocket.send("{\"type\": \"StartGame\"}");
+    clearInterval(websocketInterval);
+    websocketInterval = setInterval(function(){
+        if (websocket.readyState == websocket.OPEN) {  
+            websocket.send("{\"type\": \"Ping\"}");
+        }
+    }, 5000);
+}
