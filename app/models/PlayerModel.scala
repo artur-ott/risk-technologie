@@ -1,3 +1,5 @@
 package models
 
-case class PlayerModel (name: String)
+import java.util.UUID
+
+case class PlayerModel(uuid: UUID, name: String)

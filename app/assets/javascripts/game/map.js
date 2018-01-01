@@ -830,7 +830,7 @@ function _map_init(node, width=1650, height=1080) {
     map_width = width;
     map_height = height;
     Object.keys(map_refrences.colors).forEach(function(name) {
-        map_data[name] = map_refrences.colors[name];//[255, 255, 255];
+        map_data[name] = {'color': [255, 255, 255], 'troops': 0};
     });
     map_load_();
 }
@@ -873,7 +873,7 @@ function map_draw() {
     map_ctx_map.drawImage(map_img_map, 0, 0, map_width, map_height);
     map_ctx_ref.drawImage(map_img_ref, 0, 0, map_width, map_height);
     Object.keys(map_data).forEach(function(name) {
-        map_draw_country(name, map_data[name]);
+        map_draw_country(name, map_data[name]['color'], map_data[name]['troops']);
     });
 }
 
@@ -1141,8 +1141,13 @@ function map_click(event) {
     var rect = map_node.getBoundingClientRect();
     let x = event.clientX - rect.left;
     let y = event.clientY - rect.top;
-    console.log("Land: " + map_position_to_land(x/getScale(), y/getScale()) + "; X: " + x/getScale() + " Y: " + y/getScale());
-    map_draw_country(map_position_to_land(x/getScale(), y/getScale()), [Math.random() * 256, Math.random() * 256, Math.random() * 256]);
+    let message = {
+        'type': 'Click',
+        'message': map_position_to_land(x/getScale(), y/getScale())
+    };
+    websocket.send(JSON.stringify(message));
+    //console.log("Land: " + map_position_to_land(x/getScale(), y/getScale()) + "; X: " + x/getScale() + " Y: " + y/getScale());
+    //map_draw_country(map_position_to_land(x/getScale(), y/getScale()), [Math.random() * 256, Math.random() * 256, Math.random() * 256]);
 }
 
 function map_hover(event) {
