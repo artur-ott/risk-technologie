@@ -7,13 +7,22 @@ function log(text) {
 let AllowedMessages = ["MessageTypeList"];
 let websocket;
 let websocketInterval;
+
+function startGame() {
+    websocket.send("{\"type\": \"StartGame\"}");
+    clearInterval(websocketInterval);
+    websocketInterval = setInterval(function(){
+        if (websocket.readyState == websocket.OPEN) {  
+            websocket.send("{\"type\": \"Ping\"}");
+        }
+    }, 5000);
+}
+
 function connectToWebsocket() {
     websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
     // websocket = new WebSocket("ws://localhost:9000/game/socket");
     websocket.setTimeout;
 }
-
-connectToWebsocket();
 
 websocket.onopen = function(event) {
     log("Connected to Websocket");
@@ -55,12 +64,4 @@ websocket.onmessage = function (e) {
     }
 };
 
-function startGame() {
-    websocket.send("{\"type\": \"StartGame\"}");
-    clearInterval(websocketInterval);
-    websocketInterval = setInterval(function(){
-        if (websocket.readyState == websocket.OPEN) {  
-            websocket.send("{\"type\": \"Ping\"}");
-        }
-    }, 5000);
-}
+connectToWebsocket();
