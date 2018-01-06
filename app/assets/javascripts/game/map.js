@@ -818,12 +818,12 @@ let map_img_ref;
 let map_img_loaded = 0;
 let map_data = {};
 
-function _map_init(node, width=1650, height=1080) {
+function _map_init(node, landClick, width=1650, height=1080) {
     if (typeof map_refrences === "undefined" || !window.jQuery) return;
     map_node = node;
     map_node.className = "map_view";
     $(map_node).wrap("<div class='map_container'><div class='map_scale'></div></div>");
-    map_node.onclick = map_click;
+    map_node.onclick = function(event) { map_click(event, landClick) };
     if (!node.hasAttribute("data-map") || !node.hasAttribute("data-ref")) return;
     map_background = node.getAttribute("data-map");
     map_reference = node.getAttribute("data-ref");
@@ -1137,15 +1137,13 @@ function map_display_continent() {
     map_data = temp_map_data;
 }
 
-function map_click(event) {
+function map_click(event, landClick) {
     var rect = map_node.getBoundingClientRect();
     let x = event.clientX - rect.left;
     let y = event.clientY - rect.top;
-    let message = {
-        'type': 'Click',
-        'message': map_position_to_land(x/getScale(), y/getScale())
-    };
-    websocket.send(JSON.stringify(message));
+    let clickedLand = map_position_to_land(x/getScale(), y/getScale())
+    if (clickedLand.length === 0) return;
+    landClick(clickedLand);
     //console.log("Land: " + map_position_to_land(x/getScale(), y/getScale()) + "; X: " + x/getScale() + " Y: " + y/getScale());
     //map_draw_country(map_position_to_land(x/getScale(), y/getScale()), [Math.random() * 256, Math.random() * 256, Math.random() * 256]);
 }

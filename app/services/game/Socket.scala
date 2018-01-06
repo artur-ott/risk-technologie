@@ -8,7 +8,7 @@ import java.util.UUID
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, Ping, StartGame, SpreadTroops, UpdateMap, Close, Click, Unknown = Value
+  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, UpdateMap, Close, Click, Unknown = Value
 
   def stringToValue(messageType: String): Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
@@ -37,15 +37,18 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
           case Some(messageTypeValue) => messageTypeValue match {
             case MessageTypes.Ping => out ! Message("Ping").toJson
             case MessageTypes.StartGame => gameManager ! models.MessageModels.StartGame
-            //case MessageTypes.Click => (json \ "message").asOpt[String].getOrElse("") // TODO: implement game logic
+            case MessageTypes.Click => gameManager ! models.MessageModels.ClickedLand(uuid, (json \ "message").asOpt[String].getOrElse(""))
+            case _ => println("Wrong message type: " + messageTypeValue)
             // TODO: startGame
           }
         }
       }
     }
+
     case models.MessageModels.UpdateMap(map) => out ! Message("UpdateMap", map).toJson
     case models.MessageModels.SpreadTroops(player, troops) => out ! Message("SpreadTroops", "{\"player\": \"" +
       player + "\", \"troops\": \"" + troops + "\"}").toJson
+    case models.MessageModels.PlayerAttack(player: String) => out ! Message("PlayerAttacking", "\"" + player + "\"").toJson
     case _ => println("foo")
   }
 

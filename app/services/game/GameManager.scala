@@ -16,24 +16,54 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   gameLogic.add(this)
 
   def receive = {
-    case models.MessageModels.SetPlayer(prop, uuid) => createPlayer(prop, uuid)
-    case models.MessageModels.StartGame => startGame
-    case _ => println("foo")
+    case models.MessageModels.SetPlayer(prop, uuid) => this.createPlayer(prop, uuid)
+    case models.MessageModels.StartGame => this.startGame
+    case models.MessageModels.ClickedLand(uuid, land) => this.clickedLand(uuid, land)
+    case _ => println("GameManager: Unknown Message!")
   }
 
   def update() {
     gameLogic.getStatus match {
       case Statuses.INITIALIZE_PLAYERS => this.initializePlayers
       case Statuses.GAME_INITIALIZED => this.gameInitialized
-      case Statuses.PLAYER_SPREAD_TROOPS => spreadTroops
+      case Statuses.PLAYER_SPREAD_TROOPS => this.spreadTroops
+      case Statuses.PLAYER_ATTACK => this.playerAttacking
 
       case Statuses.NOT_ENOUGH_PLAYERS => {
-        println(players.size)
+        println("NOT_ENOUGH_PLAYERS: " + players.size)
       }
 
       case _ => println("Update: " + gameLogic.getStatus)
     }
-  }
+  } /* case Statuses.PLAYER_SPREAD_TROOPS =>
+        this.endTurnButton.setEnabled(false)
+      case Statuses.PLAYER_ATTACK =>
+        setStatusText("Angreifen")
+        troopsToSpreadLabel.setVisible(false);
+        this.endTurnButton.setEnabled(true)
+        this.updateLabels()
+        this.status = Statuses.PLAYER_ATTACK
+      case Statuses.PLAYER_MOVE_TROOPS =>
+        setStatusText("Verschieben")
+        this.status = Statuses.PLAYER_MOVE_TROOPS
+      case Statuses.DIECES_ROLLED => rollDices()
+      case Statuses.PLAYER_CONQUERED_A_COUNTRY => if (this.running) {
+        updateLabels()
+        repaintCountry(
+          gameLogic.getAttackerDefenderCountries._2._4,
+          gameLogic.getOwnerColor(gameLogic.getAttackerDefenderCountries._1._2)
+        )
+        moveTroops()
+      }
+      case Statuses.PLAYER_CONQUERED_A_CONTINENT => if (this.running) {
+        conqueredAContinent()
+        updateLabels()
+        repaintCountry(
+          gameLogic.getAttackerDefenderCountries._2._4,
+          gameLogic.getOwnerColor(gameLogic.getAttackerDefenderCountries._1._2)
+        )
+        moveTroops()
+      }*/
 
   def createPlayer(playerRef: ActorRef, uuid: UUID) = {
     this.getPlayerActorRef(uuid) match {
@@ -43,6 +73,13 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         playerActorRefs - child
         playerActorRefs += ((uuid, playerRef))
       }
+    }
+  }
+
+  def currentPlayerName: String = {
+    players.filter(p => p.uuid.toString().equals(gameLogic.getCurrentPlayer._1)).headOption match {
+      case None => ""
+      case Some(player) => player.name
     }
   }
 
@@ -71,12 +108,28 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     })
   }
 
+  def clickedLand(uuid: UUID, land: String) {
+    if (uuid.toString().equals(gameLogic.getCurrentPlayer._1)) {
+      gameLogic.getStatus match {
+        case Statuses.PLAYER_SPREAD_TROOPS => gameLogic.addTroops(land, 1)
+        case _ => println("Land (" + land + ") clicked by (" + uuid + ") in wrong status(" + gameLogic.getStatus + ")")
+      }
+    }
+  }
+
   def spreadTroops() = {
     val troops = gameLogic.getTroopsToSpread
-    val player = gameLogic.getCurrentPlayer._1
 
     playerActorRefs.foreach(playerActorRef => {
-      playerActorRef._2 ! models.MessageModels.SpreadTroops(player, troops)
+      playerActorRef._2 ! models.MessageModels.SpreadTroops(currentPlayerName, troops)
+      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata)
+    })
+  }
+
+  def playerAttacking() = {
+    playerActorRefs.foreach(playerActorRef => {
+      playerActorRef._2 ! models.MessageModels.PlayerAttack(currentPlayerName)
+      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata)
     })
   }
 
