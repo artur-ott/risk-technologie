@@ -94,6 +94,8 @@ function websocketMessages(data) {
             barElement3.message = "";
             logging.push("attacking player: " + message.value);
             break;
+        case "PlayerAttackingContinue":
+            break;
         default:
             logging.push(message.type);
     }

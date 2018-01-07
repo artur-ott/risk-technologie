@@ -13,6 +13,7 @@ import de.htwg.se.scala_risk.controller.GameLogic
 
 class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = ListBuffer()) extends Actor with TObserver {
   val playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer();
+  var attackingLand: String = "";
   gameLogic.add(this)
 
   def receive = {
@@ -28,6 +29,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       case Statuses.GAME_INITIALIZED => this.gameInitialized
       case Statuses.PLAYER_SPREAD_TROOPS => this.spreadTroops
       case Statuses.PLAYER_ATTACK => this.playerAttacking
+      case Statuses.DIECES_ROLLED => println(gameLogic.getRolledDieces)
 
       case Statuses.NOT_ENOUGH_PLAYERS => {
         println("NOT_ENOUGH_PLAYERS: " + players.size)
@@ -83,10 +85,10 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     }
   }
 
-  def startGame() = if (playerActorRefs.length >= 2) gameLogic.startGame
+  def startGame() = if (this.playerActorRefs.length >= 2) gameLogic.startGame
 
   def getPlayerActorRef(uuid: UUID): Option[(UUID, ActorRef)] = {
-    playerActorRefs.filter(child => child._1.equals(uuid)).headOption
+    this.playerActorRefs.filter(child => child._1.equals(uuid)).headOption
   }
 
   def initializePlayers() = {
@@ -103,8 +105,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def gameInitialized() = {
-    playerActorRefs.foreach(playerActorRef => {
-      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata)
+    this.playerActorRefs.foreach(playerActorRef => {
+      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata())
     })
   }
 
@@ -112,6 +114,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     if (uuid.toString().equals(gameLogic.getCurrentPlayer._1)) {
       gameLogic.getStatus match {
         case Statuses.PLAYER_SPREAD_TROOPS => gameLogic.addTroops(land, 1)
+        case Statuses.PLAYER_ATTACK => this.attack(uuid, land)
         case _ => println("Land (" + land + ") clicked by (" + uuid + ") in wrong status(" + gameLogic.getStatus + ")")
       }
     }
@@ -119,28 +122,56 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
 
   def spreadTroops() = {
     val troops = gameLogic.getTroopsToSpread
-
-    playerActorRefs.foreach(playerActorRef => {
+    this.playerActorRefs.foreach(playerActorRef => {
       playerActorRef._2 ! models.MessageModels.SpreadTroops(currentPlayerName, troops)
-      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata)
+      if (playerActorRef._1.toString.equals(gameLogic.getCurrentPlayer._1)) {
+        playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(2))
+      } else {
+        playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata())
+      }
     })
   }
 
   def playerAttacking() = {
-    playerActorRefs.foreach(playerActorRef => {
+    this.playerActorRefs.foreach(playerActorRef => {
       playerActorRef._2 ! models.MessageModels.PlayerAttack(currentPlayerName)
-      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata)
+      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(2))
     })
   }
 
-  def getMapdata: String = {
+  def attack(uuid: UUID, land: String) = {
+    if (this.attackingLand.length == 0) {
+      this.attackingLand = land
+      this.getPlayerActorRef(uuid) match {
+        case None =>
+        case Some(player) => {
+          player._2 ! models.MessageModels.PlayerAttackingContinue
+          player._2 ! models.MessageModels.UpdateMap(getMapdata(2, true))
+        }
+      }
+    } else {
+      val attackerLand = this.attackingLand;
+      this.attackingLand = ""
+      gameLogic.attack(attackerLand, land)
+    }
+  }
+
+  def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {
     val countriesList: scala.collection.mutable.ArrayBuffer[(String, String, Int, Int)] = gameLogic.getCountries
     val countries = countriesList.map(country => {
-      val colorHex = Integer.toHexString(gameLogic.getOwnerColor(country._2)).drop(1).drop(1)
+      val colorHex = Integer.toHexString(gameLogic.getOwnerColor(country._2)).drop(1).drop(1) // drop alpha
       val colorInt = Integer.parseInt(colorHex, 16)
-      val colorB = colorInt % 256
-      val colorG = (colorInt / 256) % 256
-      val colorR = ((colorInt / 256) / 256) % 256
+      var recoloringFactor = 1
+      if (recoloring != 1) {
+        if (own && gameLogic.getCurrentPlayer._1.equals(country._2)) {
+          recoloringFactor = recoloring
+        } else if (!own && !gameLogic.getCurrentPlayer._1.equals(country._2)) {
+          recoloringFactor = recoloring
+        }
+      }
+      val colorB = (colorInt % 256) / recoloringFactor
+      val colorG = ((colorInt / 256) % 256) / recoloringFactor
+      val colorR = (((colorInt / 256) / 256) % 256) / recoloringFactor
       (country._1, country._2, country._3, "[" + colorR + ", " + colorG + ", " + colorB + "]")
     })
     val sb: StringBuilder = new StringBuilder
