@@ -12,7 +12,7 @@ function createDices(dicesContainer, modal, playerNames, dices) {
         let playerDicesHTML = document.createElement("tr");
         $(dicesContainer).append(playerDicesHTML);
         let playerName = document.createElement("td");
-        $(playerName).text(String(playerNames[index]));
+        $(playerName).text(playerNames[parseInt(index)]);
         $(playerName).css("font-size", "0.2em");
         $(playerName).css("padding-right", "1em");
         playerName.setAttribute("valign", "center");
@@ -32,7 +32,7 @@ function createDices(dicesContainer, modal, playerNames, dices) {
             clearInterval(inter);
             $(dicesContainer).children("tr").each(function (index, playerDices) {
                 $(playerDices).children("td.dice").each(function (diceIndex, diceValue){
-                    $(diceValue).html(String(dicesValues[dices[index][diceIndex] - 1]));
+                    $(diceValue).html(String(dicesValues[dices[parseInt(index)][parseInt(diceIndex)] - 1]));
                 });
             });
         }, 1000);
