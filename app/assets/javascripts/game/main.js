@@ -96,6 +96,9 @@ function websocketMessages(data) {
             break;
         case "PlayerAttackingContinue":
             break;
+        case "DicesRolled":
+            createDices($(".dices"), $("#dices-modal"), message.value.players, message.value.dices);
+            break;
         default:
             logging.push(message.type);
     }
