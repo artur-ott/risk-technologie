@@ -38,35 +38,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
 
       case _ => println("Update: " + gameLogic.getStatus)
     }
-  } /* case Statuses.PLAYER_SPREAD_TROOPS =>
-        this.endTurnButton.setEnabled(false)
-      case Statuses.PLAYER_ATTACK =>
-        setStatusText("Angreifen")
-        troopsToSpreadLabel.setVisible(false);
-        this.endTurnButton.setEnabled(true)
-        this.updateLabels()
-        this.status = Statuses.PLAYER_ATTACK
-      case Statuses.PLAYER_MOVE_TROOPS =>
-        setStatusText("Verschieben")
-        this.status = Statuses.PLAYER_MOVE_TROOPS
-      case Statuses.DIECES_ROLLED => rollDices()
-      case Statuses.PLAYER_CONQUERED_A_COUNTRY => if (this.running) {
-        updateLabels()
-        repaintCountry(
-          gameLogic.getAttackerDefenderCountries._2._4,
-          gameLogic.getOwnerColor(gameLogic.getAttackerDefenderCountries._1._2)
-        )
-        moveTroops()
-      }
-      case Statuses.PLAYER_CONQUERED_A_CONTINENT => if (this.running) {
-        conqueredAContinent()
-        updateLabels()
-        repaintCountry(
-          gameLogic.getAttackerDefenderCountries._2._4,
-          gameLogic.getOwnerColor(gameLogic.getAttackerDefenderCountries._1._2)
-        )
-        moveTroops()
-      }*/
+  }
 
   def createPlayer(playerRef: ActorRef, uuid: UUID) = {
     this.getPlayerActorRef(uuid) match {
@@ -153,7 +125,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
           player._2 ! models.MessageModels.UpdateMap(getMapdata(2, true))
         }
       }
-    } else if (this.attackingLand.length != 0 && !gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
+    }
+    if (this.attackingLand.length != 0 && !gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
       val attackerLand = this.attackingLand;
       this.attackingLand = ""
       gameLogic.attack(attackerLand, land)
@@ -180,7 +153,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def conqueredACountry() = {
-    
+
   }
 
   def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {
@@ -192,7 +165,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       if (recoloring != 1) {
         if (own && gameLogic.getCurrentPlayer._1.toUpperCase.equals(country._2.toUpperCase)) {
           recoloringFactor = recoloring
-        } else if (!own && !gameLogic.getCurrentPlayer._1.toUpperCase.equals(country._2.toUpperCase)) {
+        }
+        if (!own && !gameLogic.getCurrentPlayer._1.toUpperCase.equals(country._2.toUpperCase)) {
           recoloringFactor = recoloring
         }
       }
