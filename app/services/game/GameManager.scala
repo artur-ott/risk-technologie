@@ -29,7 +29,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       case Statuses.GAME_INITIALIZED => this.gameInitialized
       case Statuses.PLAYER_SPREAD_TROOPS => this.spreadTroops
       case Statuses.PLAYER_ATTACK => this.playerAttacking
-      case Statuses.DIECES_ROLLED => println(gameLogic.getRolledDieces)
+      case Statuses.DIECES_ROLLED => this.rolledDices
+      case Statuses.PLAYER_CONQUERED_A_COUNTRY => this.conqueredACountry
 
       case Statuses.NOT_ENOUGH_PLAYERS => {
         println("NOT_ENOUGH_PLAYERS: " + players.size)
@@ -79,7 +80,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def currentPlayerName: String = {
-    players.filter(p => p.uuid.toString().equals(gameLogic.getCurrentPlayer._1)).headOption match {
+    players.filter(p => p.uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)).headOption match {
       case None => ""
       case Some(player) => player.name
     }
@@ -88,7 +89,11 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   def startGame() = if (this.playerActorRefs.length >= 2) gameLogic.startGame
 
   def getPlayerActorRef(uuid: UUID): Option[(UUID, ActorRef)] = {
-    this.playerActorRefs.filter(child => child._1.equals(uuid)).headOption
+    this.getPlayerActorRef(uuid.toString)
+  }
+
+  def getPlayerActorRef(uuid: String): Option[(UUID, ActorRef)] = {
+    this.playerActorRefs.filter(child => child._1.toString.toUpperCase.equals(uuid.toUpperCase)).headOption
   }
 
   def initializePlayers() = {
@@ -111,7 +116,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def clickedLand(uuid: UUID, land: String) {
-    if (uuid.toString().equals(gameLogic.getCurrentPlayer._1)) {
+    if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
       gameLogic.getStatus match {
         case Statuses.PLAYER_SPREAD_TROOPS => gameLogic.addTroops(land, 1)
         case Statuses.PLAYER_ATTACK => this.attack(uuid, land)
@@ -124,7 +129,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     val troops = gameLogic.getTroopsToSpread
     this.playerActorRefs.foreach(playerActorRef => {
       playerActorRef._2 ! models.MessageModels.SpreadTroops(currentPlayerName, troops)
-      if (playerActorRef._1.toString.equals(gameLogic.getCurrentPlayer._1)) {
+      if (playerActorRef._1.toString.toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
         playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(2))
       } else {
         playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata())
@@ -140,20 +145,42 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def attack(uuid: UUID, land: String) = {
-    if (this.attackingLand.length == 0) {
+    if (this.attackingLand.length == 0 && gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
       this.attackingLand = land
       this.getPlayerActorRef(uuid) match {
         case None =>
         case Some(player) => {
-          player._2 ! models.MessageModels.PlayerAttackingContinue
           player._2 ! models.MessageModels.UpdateMap(getMapdata(2, true))
         }
       }
-    } else {
+    } else if (this.attackingLand.length != 0 && !gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
       val attackerLand = this.attackingLand;
       this.attackingLand = ""
       gameLogic.attack(attackerLand, land)
     }
+  }
+
+  def rolledDices() = {
+    val attackerDefenderCountries = gameLogic.getAttackerDefenderCountries
+    val player1 = players.filter(p => p.uuid.toString().toUpperCase.
+      equals(attackerDefenderCountries._1._2.toUpperCase)).headOption match {
+      case None => ""
+      case Some(player) => player.name
+    }
+    val player2 = players.filter(p => p.uuid.toString().toUpperCase.
+      equals(attackerDefenderCountries._2._2.toUpperCase)).headOption match {
+      case None => ""
+      case Some(player) => player.name
+    }
+    val player = (attackerDefenderCountries._1._1 + ", " + player1, attackerDefenderCountries._2._1 + ", " + player2)
+    val dices = gameLogic.getRolledDieces
+    this.playerActorRefs.foreach(playerActorRef => {
+      playerActorRef._2 ! models.MessageModels.RolledDices(player, dices)
+    })
+  }
+
+  def conqueredACountry() = {
+    
   }
 
   def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {
@@ -163,9 +190,9 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       val colorInt = Integer.parseInt(colorHex, 16)
       var recoloringFactor = 1
       if (recoloring != 1) {
-        if (own && gameLogic.getCurrentPlayer._1.equals(country._2)) {
+        if (own && gameLogic.getCurrentPlayer._1.toUpperCase.equals(country._2.toUpperCase)) {
           recoloringFactor = recoloring
-        } else if (!own && !gameLogic.getCurrentPlayer._1.equals(country._2)) {
+        } else if (!own && !gameLogic.getCurrentPlayer._1.toUpperCase.equals(country._2.toUpperCase)) {
           recoloringFactor = recoloring
         }
       }

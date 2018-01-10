@@ -34,36 +34,36 @@ function finishMove() {
     // Dummy function to rule the world
 }
 
-
-
-$(document).ready(function() {
-    document.getElementById("dropdownLoad").addEventListener("click", loadGame);
-    document.getElementById("dropdownSave").addEventListener("click", saveGame);
-    document.getElementById("dropdownShow").addEventListener("click", showContinents);
-    document.getElementById("dropdownContinue").addEventListener("click", continueGame);
-    document.getElementById("dropdownClose").addEventListener("click", closeGame);
-    document.getElementById("withdrawButton").addEventListener("click", withdraw);
-    document.getElementById("finishMoveButton").addEventListener("click", finishMove);
-    _map_init($("#map")[0], landClick, 1650, 1080, 1);
-    websocket = connectToWebsocket(websocketMessages);
-});
+function landClick(clickedLand) {
+    let message = {
+        "type": "Click",
+        "message": clickedLand
+    };
+    websocket.send(JSON.stringify(message));
+}
 
 function startGame() {
     websocket.send("{\"type\": \"StartGame\"}");
     clearInterval(websocketInterval);
     websocketInterval = setInterval(function(){
-        if (websocket.readyState == websocket.OPEN) {  
+        if (websocket.readyState === websocket.OPEN) {  
             websocket.send("{\"type\": \"Ping\"}");
         }
     }, 5000);
 }
 
-function landClick(clickedLand) {
-    let message = {
-        'type': 'Click',
-        'message': clickedLand
-    };
-    websocket.send(JSON.stringify(message));
+function spreadTroops(message) {
+    barElement1.message = message.value.player;
+    barElement2.message = "Ausrüsten";
+    barElement3.message = message.value.troops;
+    logging.push("player: " + message.value.player + " troops: " + message.value.troops);
+}
+
+function playerAttacking(message) {
+    barElement1.message = message.value;
+    barElement2.message = "Angreifen";
+    barElement3.message = "";
+    logging.push("attacking player: " + message.value);
 }
 
 function websocketMessages(data) {
@@ -83,20 +83,27 @@ function websocketMessages(data) {
             map_draw();
             break;
         case "SpreadTroops":
-            barElement1.message = message.value.player;
-            barElement2.message = "Ausrüsten";
-            barElement3.message = message.value.troops;
-            logging.push("player: " + message.value.player + " troops: " + message.value.troops);
+            spreadTroops(message);
             break;
         case "PlayerAttacking":
-            barElement1.message = message.value;
-            barElement2.message = "Angreifen";
-            barElement3.message = "";
-            logging.push("attacking player: " + message.value);
+            playerAttacking(message);
             break;
-        case "PlayerAttackingContinue":
+        case "DicesRolled":
+            createDices($(".dices"), $("#dices-modal"), message.value.players, message.value.dices);
             break;
         default:
             logging.push(message.type);
     }
 }
+
+$(document).ready(function() {
+    document.getElementById("dropdownLoad").addEventListener("click", loadGame);
+    document.getElementById("dropdownSave").addEventListener("click", saveGame);
+    document.getElementById("dropdownShow").addEventListener("click", showContinents);
+    document.getElementById("dropdownContinue").addEventListener("click", continueGame);
+    document.getElementById("dropdownClose").addEventListener("click", closeGame);
+    document.getElementById("withdrawButton").addEventListener("click", withdraw);
+    document.getElementById("finishMoveButton").addEventListener("click", finishMove);
+    _map_init($("#map")[0], landClick, 1650, 1080, 1);
+    websocket = connectToWebsocket(websocketMessages);
+});

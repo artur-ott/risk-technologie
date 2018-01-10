@@ -8,7 +8,7 @@ import java.util.UUID
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, UpdateMap, Close, Click, Unknown = Value
+  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, UpdateMap, Close, Click, Unknown = Value
 
   def stringToValue(messageType: String): Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
@@ -48,8 +48,17 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
     case models.MessageModels.SpreadTroops(player, troops) => out ! Message("SpreadTroops", "{\"player\": \"" +
       player + "\", \"troops\": \"" + troops + "\"}").toJson
     case models.MessageModels.PlayerAttack(player: String) => out ! Message("PlayerAttacking", "\"" + player + "\"").toJson
-    case models.MessageModels.PlayerAttackingContinue => out ! Message("PlayerAttackingContinue").toJson
+    case models.MessageModels.RolledDices(players, dices) =>
+      out ! Message("DicesRolled", "{ \"players\": " + this.players(players) + ", \"dices\": " + this.dices(dices) + "}").toJson
     case unknown: Any => println("Player: " + unknown.getClass.toString)
+  }
+
+  def players(players: (String, String)): String = {
+    "[\"" + players._1 + "\",\"" + players._2 + "\"]"
+  }
+
+  def dices(dices: (List[Int], List[Int])): String = {
+    "[[\"" + dices._1.mkString("\",\"") + "\"], [\"" + dices._2.mkString("\",\"") + "\"]]"
   }
 
   def sendMessageTypes() = {
