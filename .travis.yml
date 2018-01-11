@@ -9,4 +9,8 @@ script:
 - sbt clean compile
 
 notifications:
-  slack: artursslack:0G4l3ExOKbGYmINqBi7GOozR
+  slack:
+    artursslack: 0G4l3ExOKbGYmINqBi7GOozR
+    on_success: never
+    on_failure: always
+  email: false
