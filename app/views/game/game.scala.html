@@ -13,14 +13,15 @@
 }
 
 @additionalJs = {
-    <script src="@assets.path("javascripts/game/map.js")" type="text/javascript"></script>
-    <script src="@assets.path("javascripts/game/main.js")"></script>
+    <script src="@assets.path("javascripts/game/main.js")"text="text/javascript"></script>
     <script src="@assets.path("javascripts/game/websocket.js")"></script>
     <script src="@assets.path("javascripts/game/vue.min.js")"type="text/javascript"></script>
+    <script src="@assets.path("javascripts/game/map.js")" type="text/javascript"></script>
     <script src="@assets.path("javascripts/game/myVue.js")"type="text/javascript"></script>
 }
 
-@main("Risk Technologie- The Game!", None, additionalCss, additionalJs) {
+<!-- append now main2 which doesn't include the silhouette bar -->
+@main2("Risk Technologie- The Game!", None, additionalCss, additionalJs) {
     <nav class="navbar navbar-expand navbar-light bg-light">
         <div id="message-1">
             <span v-bind:title="message">
