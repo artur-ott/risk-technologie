@@ -1,29 +1,44 @@
-@*@additionalCss = {*@
-    @*<link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("stylesheets/game.css")">*@
-@*}*@
+@import views.html._
 
-@*@additionalJs = {*@
-    @*<script src="@routes.Assets.versioned("/bower_components/webcomponentsjs/webcomponents-loader.js")"type="=text/javascript"></script>*@
-@*}*@
+@import views.html.main
+@import play.api.mvc.RequestHeader
+@import org.webjars.play.WebJarsUtil
+@import controllers.AssetsFinder
+@import play.api.i18n.Messages
 
-@*@additionalHtml = {*@
-        @*<!-- See https://goo.gl/OOhYW5 -->*@
-    @*<link rel="manifest" href=@routes.Assets.versioned("/manifest.json")>*@
-    @*<link rel="import" href=@routes.Assets.versioned("/bower_components/scratch-card/scratch-card.html")>*@
-@*}*@
+@()(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+
+@additionalCss = {
+    <link rel="stylesheet" type="text/css" href="@assets.path("stylesheets/game.css")">
+}
+
+@additionalJs = {
+    <script src="@assets.path("javascripts/game/main.js")"text="text/javascript"></script>
+    <script src="@assets.path("javascripts/game/websocket.js")"></script>
+    <script src="@assets.path("javascripts/game/vue.min.js")"type="text/javascript"></script>
+    <script src="@assets.path("javascripts/game/map.js")" type="text/javascript"></script>
+    <script src="@assets.path("javascripts/game/myVue.js")"type="text/javascript"></script>
+    <script src="@assets.path("/bower_components/webcomponentsjs/webcomponents-loader.js")"type="=text/javascript"></script>
+}
 
 
-@*@main("Risk Technologie- The Game! - Bonus", None, additionalCss, additionalJs, additionalHtml) {*@
-    @*<!-- das gescratche will ich auf dev haben :D . Das ist doch optional um polymer vorstellen. -->*@
-    @*<div class="mt-2 col-md-20"></div>  <!-- adding some margings -->*@
+@mainGame("Risk Technologie- The Game! - Bonus", None, additionalCss, additionalJs) {
+
+    <link rel="import" href="@assets.path("/src/polymer-risk-sample-app/polymer-custom-string.html")">
+    <link rel="import" href="@assets.path("/bower_components/scratch-card/scratch-card.html")">
+
+    <div class="mt-2 col-md-20"></div>  <!-- adding some margings -->
 
 
-    @*<scratch-card*@
-    @*background="@routes.Assets.versioned("images/scratch_background.png")"*@
-    @*foreground="@routes.Assets.versioned("images/scratch_foreground.png")"*@
-    @*percent=70*@
-    @*thickness=75*@
-    @*load>*@
-    @*</scratch-card>*@
+    <scratch-card
+    background="@assets.path("images/scratch_background.png")"
+    foreground="@assets.path("images/scratch_foreground.png")"
+    percent=70
+    thickness=75
+    load>
+    </scratch-card>
 
-@*}*@
+    <polymer-custom-string
+    ></polymer-custom-string>
+
+}

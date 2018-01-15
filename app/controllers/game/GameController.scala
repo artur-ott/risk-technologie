@@ -107,6 +107,10 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
     Future.successful(Ok(views.html.game.rules()))
   }
 
+  def bonus = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    Future.successful(Ok(views.html.game.bonus()))
+  }
+
   def socket = WebSocket.acceptOrResult[String, String] { request =>
     implicit val req = Request(request, AnyContentAsEmpty)
     silhouette.SecuredRequestHandler { securedRequest =>

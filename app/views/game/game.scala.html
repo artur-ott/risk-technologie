@@ -24,11 +24,6 @@
 
 @mainGame("Risk Technologie- The Game!", None, additionalCss, additionalJs) {
 
-    @*
-    <link rel="import" src="@assets.path("/src/polymer-risk-sample-app/polymer-custom-string.html")>
-    <link rel="import" src="@assets.path("/bower_components/scratch-card/scratch-card.html")>
-        *@
-
     <nav class="navbar navbar-expand navbar-light bg-light">
         <div id="message-1">
             <span v-bind:title="message">
@@ -65,12 +60,7 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" target="_blank" href="@controllers.game.routes.GameController.description">Spielbeschreibung</a>
                             <a class="dropdown-item" target="_blank" href="@controllers.game.routes.GameController.rules">Spielregeln</a>
-
-                            @*href="@controllers.account.routes.SignUpController.view">@messages("sign.up")</a></li>
-                            <a class="dropdown-item" target="_blank" href="@routes.GameController.description()">Spielbeschreibung</a>
-                            <a class="dropdown-item" target="_blank" href="@routes.GameController.rules()">Spielregeln</a>
-                            <a class="dropdown-item" target="_blank" href="@routes.GameController.bonus()">Bonus</a> *@
-
+                            <a class="dropdown-item" target="_blank" href="@controllers.game.routes.GameController.bonus">Bonus</a>
                         </div>
                     </li>
                 </ul>
