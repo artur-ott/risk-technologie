@@ -29,7 +29,10 @@ GET         /game                            controllers.game.GameController.gam
 GET         /game/socket                     controllers.game.GameController.socket
 GET         /game/description                controllers.game.GameController.description
 GET         /game/rules                      controllers.game.GameController.rules
+#GET         /game/bonus                     controllers.game.GameController.bonus
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                    controllers.Assets.versioned(file)
 ->          /webjars                         webjars.Routes
+
