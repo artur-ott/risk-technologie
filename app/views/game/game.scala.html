@@ -37,19 +37,13 @@
     <div class="container">
 
         <div class="row">
-            <div class="col" id="bar-1">
-                <p>{{ message }}</p>
-            </div>
-            <div class="col" id="bar-2">
-                <p>{{ message }}</p>
-            </div>
-            <div class="col" id="bar-3">
-                <p>{{ message }}</p>
-            </div>
-            </div>
-            <div class="col-10">
-                <button type="submit" class="btn btn-outline-success btn-block" id="finishMoveButton">Zug beenden</button>
-            </div>
+            <h2><div class="col-md-3" id="bar-1"><p>{{ message }}</p></div></h2>
+            <h2><div class="col-md-4" id="bar-2"><p>{{ message }}</p></div></h2>
+            <h2><div class="col-md-3" id="bar-3"><p>{{ message }}</p></div></h2>
+        </div>
+        <div>
+            <button type="button" class="btn btn-success btn-block" id="finishMoveButton">Zug beenden</button>
         </div>
     </div>
+
 }
