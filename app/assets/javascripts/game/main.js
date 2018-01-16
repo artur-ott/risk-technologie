@@ -89,7 +89,9 @@ function websocketMessages(data) {
             playerAttacking(message);
             break;
         case "DicesRolled":
-            createDices($(".dices"), $("#dices-modal"), message.value.players, message.value.dices);
+            createDices($(".dices"), message.value.players, message.value.dices);
+            break;
+        case "ConqueredCountry":
             break;
         default:
             logging.push(message.type);
@@ -106,4 +108,7 @@ $(document).ready(function() {
     document.getElementById("finishMoveButton").addEventListener("click", finishMove);
     _map_init($("#map")[0], landClick, 1650, 1080, 1);
     websocket = connectToWebsocket(websocketMessages);
+
+    // TODO: REMOVE
+    createDices($(".dices"), ['test', 'test2'], [[6,4,1],[5,3]]);
 });

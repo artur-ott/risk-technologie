@@ -7,7 +7,7 @@ function rollDices(dicesContainer) {
     });
 }
 
-function createDices(dicesContainer, modal, playerNames, dices) {
+function createDices(dicesContainer, playerNames, dices) {
     dices.forEach((player, index) => {
         let playerDicesHTML = document.createElement("tr");
         $(dicesContainer).append(playerDicesHTML);
@@ -25,20 +25,14 @@ function createDices(dicesContainer, modal, playerNames, dices) {
             $(playerDicesHTML).append(diceHTML);
         });
     });
-    
-    $(modal).on("show.bs.modal", function (e) {
-        let inter = setInterval(function () {rollDices(dicesContainer);}, 100);
-        setTimeout(function() {
-            clearInterval(inter);
-            $(dicesContainer).children("tr").each(function (index, playerDices) {
-                $(playerDices).children("td.dice").each(function (diceIndex, diceValue){
-                    $(diceValue).html(String(dicesValues[dices[parseInt(index)][parseInt(diceIndex)] - 1]));
-                });
+
+    let inter = setInterval(function () {rollDices(dicesContainer);}, 100);
+    setTimeout(function() {
+        clearInterval(inter);
+        $(dicesContainer).children("tr").each(function (index, playerDices) {
+            $(playerDices).children("td.dice").each(function (diceIndex, diceValue){
+                $(diceValue).html(String(dicesValues[dices[parseInt(index)][parseInt(diceIndex)] - 1]));
             });
-        }, 1000);
-        $(modal).on("hide.bs.modal", function (ev) {
-            $(dicesContainer).html("");
         });
-    });
-    $(modal).modal("show");
+    }, 1000);
 }

@@ -153,7 +153,14 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def conqueredACountry() = {
+    val attackerDefenderCountries = gameLogic.getAttackerDefenderCountries
+    println(attackerDefenderCountries)
+    this.playerActorRefs.filter(p => p._1.toString().toUpperCase.
+      equals(attackerDefenderCountries._1._2.toUpperCase)).foreach(p => p)
+  }
 
+  def moveTroops() = {
+    gameLogic.moveTroops(1)
   }
 
   def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {

@@ -26,6 +26,7 @@
                 <div class="form-group">
                     <label for="games">Spiele</label>
                     <select multiple class="form-control" name="game_selected" id="games" @if(gameModels.length == 0){disabled}>
+                        <option></option>
                         @for(gameModel <- gameModels) {
                             <option value="@gameModel.id">@gameModel.id</option>
                         }

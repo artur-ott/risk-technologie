@@ -96,7 +96,7 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
   }
 
   def game = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-    Future.successful(Ok(views.html.game.game()))
+    Future.successful(Ok(views.html.game.game(request.identity)))
   }
 
   def description = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
