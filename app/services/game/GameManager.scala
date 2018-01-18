@@ -158,6 +158,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
       gameLogic.getStatus match {
         case Statuses.PLAYER_CONQUERED_A_COUNTRY => gameLogic.moveTroops(troops)
+        case Statuses.PLAYER_CONQUERED_A_CONTINENT => gameLogic.moveTroops(troops)
         case _ => println("Move trrops (" + troops + ") by (" + uuid + ") in wrong status(" + gameLogic.getStatus + ")")
       }
     }
