@@ -34,7 +34,11 @@ function withdraw() {
 }
 
 function finishMove() {
-    // Dummy function to rule the world
+    let message = {
+        "type": "EndTurn",
+        "message": ""
+    };
+    websocket.send(JSON.stringify(message));
 }
 
 function landClick(clickedLand) {
@@ -106,6 +110,7 @@ function websocketMessages(data) {
             map_draw();
             break;
         case "SpreadTroops":
+			// Disable end turn
             spreadTroops(message);
             break;
         case "PlayerAttacking":

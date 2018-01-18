@@ -11,8 +11,10 @@ object MessageModels {
   case class RolledDices(players: (String, String), dices: (List[Int], List[Int]))
   case class ConqueredCountry(land: String)
   case class PlayerConqueredCountry(troops: Int)
+  case class TransfereTroops(player: Boolean = false)
 
   case class StartGame()
   case class ClickedLand(uuid: UUID, land: String)
   case class MoveTroops(uuid: UUID, troops: Int)
+  case class EndTurn(uuid: UUID)
 }

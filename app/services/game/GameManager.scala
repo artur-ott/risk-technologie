@@ -21,6 +21,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     case models.MessageModels.StartGame => this.startGame
     case models.MessageModels.ClickedLand(uuid, land) => this.clickedLand(uuid, land)
     case models.MessageModels.MoveTroops(uuid, troops) => this.moveTroops(uuid, troops)
+    case models.MessageModels.EndTurn(uuid) => this.endTurn(uuid)
     case _ => println("GameManager: Unknown Message!")
   }
 
@@ -32,6 +33,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       case Statuses.PLAYER_ATTACK => this.playerAttacking
       case Statuses.DIECES_ROLLED => this.rolledDices
       case Statuses.PLAYER_CONQUERED_A_COUNTRY => this.conqueredACountry
+      case Statuses.PLAYER_CONQUERED_A_CONTINENT => this.conqueredACountry
+      case Statuses.PLAYER_MOVE_TROOPS => this.transfereTroops
 
       case Statuses.NOT_ENOUGH_PLAYERS => {
         println("NOT_ENOUGH_PLAYERS: " + players.size)
@@ -102,18 +105,14 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     val troops = gameLogic.getTroopsToSpread
     this.playerActorRefs.foreach(playerActorRef => {
       playerActorRef._2 ! models.MessageModels.SpreadTroops(currentPlayerName, troops)
-      if (playerActorRef._1.toString.toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
-        playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(2))
-      } else {
-        playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata())
-      }
+      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(if (playerActorRef._1.toString.toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) 2 else 1))
     })
   }
 
   def playerAttacking() = {
     this.playerActorRefs.foreach(playerActorRef => {
       playerActorRef._2 ! models.MessageModels.PlayerAttack(currentPlayerName)
-      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(2))
+      playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(if (playerActorRef._1.toString.toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) 2 else 1))
     })
   }
 
@@ -162,6 +161,25 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         case _ => println("Move trrops (" + troops + ") by (" + uuid + ") in wrong status(" + gameLogic.getStatus + ")")
       }
     }
+  }
+
+  def endTurn(uuid: UUID) = {
+    if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
+      gameLogic.getStatus match {
+        case Statuses.PLAYER_ATTACK => gameLogic.endTurn
+        case Statuses.PLAYER_MOVE_TROOPS => gameLogic.endTurn
+      }
+    }
+  }
+
+  def transfereTroops() = {
+    this.playerActorRefs.foreach(playerActorRef => {
+      playerActorRef._2 ! models.MessageModels.TransfereTroops(playerActorRef._1.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase))
+    })
+  }
+
+  def dragTroops(lands: (String, String), troops: Int) = {
+    //gameLogic.dragTroops(actionCountries(0)._1, actionCountries(1)._1, choiceAsInt)
   }
 
   def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {

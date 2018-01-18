@@ -9,7 +9,7 @@ import scala.collection.mutable.HashMap
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, PlayerConqueredCountry, ConqueredCountry, UpdateMap, Close, Click, MoveTroops, Unknown = Value
+  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, PlayerConqueredCountry, ConqueredCountry, EndTurn, TransfereTroops, UpdateMap, Close, Click, MoveTroops, Unknown = Value
 
   def stringToValue(messageType: String): Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
@@ -70,6 +70,7 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
             case MessageTypes.StartGame => gameManager ! models.MessageModels.StartGame
             case MessageTypes.Click => gameManager ! models.MessageModels.ClickedLand(uuid, (json \ "message").asOpt[String].getOrElse(""))
             case MessageTypes.MoveTroops => gameManager ! models.MessageModels.MoveTroops(uuid, (json \ "message").asOpt[Int].getOrElse(1))
+            case MessageTypes.EndTurn => gameManager ! models.MessageModels.EndTurn(uuid)
             case _ => println("Wrong message type: " + messageTypeValue)
           }
         }
@@ -93,6 +94,7 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
       out ! message.toJson
     case models.MessageModels.PlayerConqueredCountry(troops) => out ! Message("PlayerConqueredCountry", troops.toString).toJson
     case models.MessageModels.ConqueredCountry(land) => out ! Message("ConqueredCountry", land).toJson
+    case models.MessageModels.TransfereTroops(player) => out ! Message("TransfereTroops", player.toString).toJson
     case unknown: Any => println("Player: " + unknown.getClass.toString)
   }
 
