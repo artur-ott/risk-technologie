@@ -87,6 +87,7 @@ function websocketMessages(data) {
             map_draw();
             break;
         case "SpreadTroops":
+			// Disable end turn
             spreadTroops(message);
             break;
         case "PlayerAttacking":
