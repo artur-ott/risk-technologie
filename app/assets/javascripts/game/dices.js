@@ -7,16 +7,18 @@ function rollDices(dicesContainer) {
     });
 }
 
-function createDices(dicesContainer, playerNames, dices) {
+function createDices(dicesContainer, landNames, dices) {
+    $(dicesContainer).show();
+    $(dicesContainer).html("");
     dices.forEach((player, index) => {
         let playerDicesHTML = document.createElement("tr");
         $(dicesContainer).append(playerDicesHTML);
-        let playerName = document.createElement("td");
-        $(playerName).text(playerNames[parseInt(index)]);
-        $(playerName).css("font-size", "0.2em");
-        $(playerName).css("padding-right", "1em");
-        playerName.setAttribute("valign", "center");
-        $(playerDicesHTML).append(playerName);
+        let landName = document.createElement("td");
+        $(landName).text(landNames[parseInt(index)]);
+        $(landName).css("font-size", "0.2em");
+        $(landName).css("padding-right", "1em");
+        landName.setAttribute("valign", "center");
+        $(playerDicesHTML).append(landName);
         player.forEach((dice) => {
             let diceHTML = document.createElement("td");
             $(diceHTML).addClass("dice");

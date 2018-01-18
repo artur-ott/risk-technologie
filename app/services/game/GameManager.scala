@@ -20,6 +20,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     case models.MessageModels.SetPlayer(prop, uuid) => this.createPlayer(prop, uuid)
     case models.MessageModels.StartGame => this.startGame
     case models.MessageModels.ClickedLand(uuid, land) => this.clickedLand(uuid, land)
+    case models.MessageModels.MoveTroops(uuid, troops) => this.moveTroops(uuid, troops)
     case _ => println("GameManager: Unknown Message!")
   }
 
@@ -135,17 +136,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
 
   def rolledDices() = {
     val attackerDefenderCountries = gameLogic.getAttackerDefenderCountries
-    val player1 = players.filter(p => p.uuid.toString().toUpperCase.
-      equals(attackerDefenderCountries._1._2.toUpperCase)).headOption match {
-      case None => ""
-      case Some(player) => player.name
-    }
-    val player2 = players.filter(p => p.uuid.toString().toUpperCase.
-      equals(attackerDefenderCountries._2._2.toUpperCase)).headOption match {
-      case None => ""
-      case Some(player) => player.name
-    }
-    val player = (attackerDefenderCountries._1._1 + ", " + player1, attackerDefenderCountries._2._1 + ", " + player2)
+    val player = (attackerDefenderCountries._1._1.toString, attackerDefenderCountries._2._1.toString)
     val dices = gameLogic.getRolledDieces
     this.playerActorRefs.foreach(playerActorRef => {
       playerActorRef._2 ! models.MessageModels.RolledDices(player, dices)
@@ -154,13 +145,23 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
 
   def conqueredACountry() = {
     val attackerDefenderCountries = gameLogic.getAttackerDefenderCountries
-    println(attackerDefenderCountries)
     this.playerActorRefs.filter(p => p._1.toString().toUpperCase.
-      equals(attackerDefenderCountries._1._2.toUpperCase)).foreach(p => p)
+      equals(attackerDefenderCountries._1._2.toUpperCase)).foreach(
+      p => p._2 ! models.MessageModels.PlayerConqueredCountry(attackerDefenderCountries._1._3)
+    )
+    this.playerActorRefs.filter(p => !p._1.toString().toUpperCase.
+      equals(attackerDefenderCountries._1._2.toUpperCase)).foreach(
+      p => p._2 ! models.MessageModels.ConqueredCountry(attackerDefenderCountries._2._1)
+    )
   }
 
-  def moveTroops() = {
-    gameLogic.moveTroops(1)
+  def moveTroops(uuid: UUID, troops: Int) = {
+    if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
+      gameLogic.getStatus match {
+        case Statuses.PLAYER_CONQUERED_A_COUNTRY => gameLogic.moveTroops(troops)
+        case _ => println("Move trrops (" + troops + ") by (" + uuid + ") in wrong status(" + gameLogic.getStatus + ")")
+      }
+    }
   }
 
   def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {
