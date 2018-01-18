@@ -13,4 +13,5 @@ object MessageModels {
 
   case class StartGame()
   case class ClickedLand(uuid: UUID, land: String)
+  case class EndTurn(uuid: UUID)
 }

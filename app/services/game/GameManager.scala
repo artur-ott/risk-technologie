@@ -20,6 +20,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     case models.MessageModels.SetPlayer(prop, uuid) => this.createPlayer(prop, uuid)
     case models.MessageModels.StartGame => this.startGame
     case models.MessageModels.ClickedLand(uuid, land) => this.clickedLand(uuid, land)
+    case models.MessageModels.EndTurn(uuid) => this.endTurn(uuid)
     case _ => println("GameManager: Unknown Message!")
   }
 
@@ -161,6 +162,14 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
 
   def moveTroops() = {
     gameLogic.moveTroops(1)
+  }
+  
+  def endTurn(uuid: UUID) = {
+    if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
+      gameLogic.getStatus match {
+        case Statuses.PLAYER_ATTACK => gameLogic.endTurn
+	  }
+    }
   }
 
   def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {

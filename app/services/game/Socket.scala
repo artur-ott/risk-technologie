@@ -8,7 +8,7 @@ import java.util.UUID
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, ConqueredCountry, UpdateMap, Close, Click, Unknown = Value
+  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, ConqueredCountry, EndTurn, UpdateMap, Close, Click, Unknown = Value
 
   def stringToValue(messageType: String): Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
@@ -38,6 +38,7 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
             case MessageTypes.Ping => out ! Message("Ping").toJson
             case MessageTypes.StartGame => gameManager ! models.MessageModels.StartGame
             case MessageTypes.Click => gameManager ! models.MessageModels.ClickedLand(uuid, (json \ "message").asOpt[String].getOrElse(""))
+            case MessageTypes.EndTurn => gameManager ! models.MessageModels.EndTurn(uuid)
             case _ => println("Wrong message type: " + messageTypeValue)
           }
         }

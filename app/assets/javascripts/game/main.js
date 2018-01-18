@@ -31,7 +31,11 @@ function withdraw() {
 }
 
 function finishMove() {
-    // Dummy function to rule the world
+    let message = {
+        "type": "EndTurn",
+        "message": ""
+    };
+    websocket.send(JSON.stringify(message));
 }
 
 function landClick(clickedLand) {
