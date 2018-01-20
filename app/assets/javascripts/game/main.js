@@ -3,7 +3,7 @@ let AllowedMessages = ["MessageTypeList"];
 let websocketInterval;
 let dices;
 let conquered_country;
-let player_conquered_country;
+let move_troops;
 
 function mouseoverPicture() {
     // Add nice hover hover function here
@@ -34,11 +34,7 @@ function withdraw() {
 }
 
 function finishMove() {
-    let message = {
-        "type": "EndTurn",
-        "message": ""
-    };
-    websocket.send(JSON.stringify(message));
+    websocket.send("{\"type\": \"EndTurn\"}");
 }
 
 function landClick(clickedLand) {
@@ -55,6 +51,22 @@ function playerConqueredCountrySocket(troops) {
         "message": troops
     };
     websocket.send(JSON.stringify(message));
+}
+
+function moveTroopsSocket(landFrom, landTo, troops) {
+    let message = {
+        "type": "TransfereTroops",
+        "message": {
+            landFrom,
+            landTo,
+            troops
+        }
+    };
+    websocket.send(JSON.stringify(message));
+}
+
+function resetMoveTroops() {
+    websocket.send("{\"type\": \"ResetTransfereTroops\"}");
 }
 
 function startGame() {
@@ -90,6 +102,7 @@ function playerConqueredCountryMove() {
 function hideStatusElements() {
     dices.hide();
     conquered_country.hide();
+    move_troops.hide();
 }
 
 function websocketMessages(data) {
@@ -109,6 +122,7 @@ function websocketMessages(data) {
             map_draw();
             break;
         case "SpreadTroops":
+            hideStatusElements();
 			// Disable end turn
             spreadTroops(message);
             break;
@@ -127,6 +141,17 @@ function websocketMessages(data) {
             hideStatusElements();
             conqueredCountry(conquered_country, message.value);
             break;
+        case "TransfereTroops":
+            hideStatusElements();
+            playerConqueredCountryMove();
+            moveTroops(move_troops, moveTroopsSocket, resetMoveTroops);
+            break;
+        case "TransfereTroopsSetFromLand":
+            setFromLand(message.value.land, message.value.troops);
+            break;
+        case "TransfereTroopsSetToLand":
+            setToLand(message.value);
+            break;
         default:
             logging.push(message.type);
     }
@@ -143,5 +168,6 @@ $(document).ready(function() {
     _map_init($("#map")[0], landClick, 1650, 1080, 1);
     dices = $(".dices");
     conquered_country = $(".conquered_country");
+    move_troops = $(".move_troops");
     websocket = connectToWebsocket(websocketMessages);
 });

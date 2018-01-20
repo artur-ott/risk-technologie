@@ -12,9 +12,13 @@ object MessageModels {
   case class ConqueredCountry(land: String)
   case class PlayerConqueredCountry(troops: Int)
   case class TransfereTroops(player: Boolean = false)
+  case class TransfereTroopsSetFromLand(land: String, troops: Int)
+  case class TransfereTroopsSetToLand(land: String)
 
   case class StartGame()
   case class ClickedLand(uuid: UUID, land: String)
   case class MoveTroops(uuid: UUID, troops: Int)
   case class EndTurn(uuid: UUID)
+  case class ResetTransfereTroops(uuid: UUID)
+  case class DragTroops(uuid: UUID, landFrom: String, landTo: String, troops: Int)
 }

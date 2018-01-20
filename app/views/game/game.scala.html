@@ -13,12 +13,13 @@
 }
 
 @additionalJs = {
+    <script src="@assets.path("javascripts/game/myVue.js")"type="text/javascript"></script>
     <script src="@assets.path("javascripts/game/map.js")" type="text/javascript"></script>
     <script src="@assets.path("javascripts/game/websocket.js")"></script>
     <script src="@assets.path("javascripts/game/dices.js")"></script>
     <script src="@assets.path("javascripts/game/conquere_country.js")"></script>
+    <script src="@assets.path("javascripts/game/move_troops.js")"></script>
     <script src="@assets.path("javascripts/game/main.js")"></script>
-    <script src="@assets.path("javascripts/game/myVue.js")"type="text/javascript"></script>
 }
 
 @main("Risk Technologie- The Game!", Some(user), additionalCss, additionalJs) {
@@ -75,6 +76,7 @@
         --><div class="layout_item two-thirds right">
             <table class="dices center left"></table>
             <div class="conquered_country left"></div>
+            <div class="move_troops left"></div>
         </div>
     </div>
 
