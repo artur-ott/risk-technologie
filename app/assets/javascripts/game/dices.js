@@ -7,16 +7,18 @@ function rollDices(dicesContainer) {
     });
 }
 
-function createDices(dicesContainer, modal, playerNames, dices) {
+function createDices(dicesContainer, landNames, dices) {
+    $(dicesContainer).show();
+    $(dicesContainer).html("");
     dices.forEach((player, index) => {
         let playerDicesHTML = document.createElement("tr");
         $(dicesContainer).append(playerDicesHTML);
-        let playerName = document.createElement("td");
-        $(playerName).text(playerNames[parseInt(index)]);
-        $(playerName).css("font-size", "0.2em");
-        $(playerName).css("padding-right", "1em");
-        playerName.setAttribute("valign", "center");
-        $(playerDicesHTML).append(playerName);
+        let landName = document.createElement("td");
+        $(landName).text(landNames[parseInt(index)]);
+        $(landName).css("font-size", "0.2em");
+        $(landName).css("padding-right", "1em");
+        landName.setAttribute("valign", "center");
+        $(playerDicesHTML).append(landName);
         player.forEach((dice) => {
             let diceHTML = document.createElement("td");
             $(diceHTML).addClass("dice");
@@ -25,20 +27,14 @@ function createDices(dicesContainer, modal, playerNames, dices) {
             $(playerDicesHTML).append(diceHTML);
         });
     });
-    
-    $(modal).on("show.bs.modal", function (e) {
-        let inter = setInterval(function () {rollDices(dicesContainer);}, 100);
-        setTimeout(function() {
-            clearInterval(inter);
-            $(dicesContainer).children("tr").each(function (index, playerDices) {
-                $(playerDices).children("td.dice").each(function (diceIndex, diceValue){
-                    $(diceValue).html(String(dicesValues[dices[parseInt(index)][parseInt(diceIndex)] - 1]));
-                });
+
+    let inter = setInterval(function () {rollDices(dicesContainer);}, 100);
+    setTimeout(function() {
+        clearInterval(inter);
+        $(dicesContainer).children("tr").each(function (index, playerDices) {
+            $(playerDices).children("td.dice").each(function (diceIndex, diceValue){
+                $(diceValue).html(String(dicesValues[dices[parseInt(index)][parseInt(diceIndex)] - 1]));
             });
-        }, 1000);
-        $(modal).on("hide.bs.modal", function (ev) {
-            $(dicesContainer).html("");
         });
-    });
-    $(modal).modal("show");
+    }, 1000);
 }

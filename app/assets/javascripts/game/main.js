@@ -1,6 +1,9 @@
 let websocket;
 let AllowedMessages = ["MessageTypeList"];
 let websocketInterval;
+let dices;
+let conquered_country;
+let player_conquered_country;
 
 function mouseoverPicture() {
     // Add nice hover hover function here
@@ -31,13 +34,25 @@ function withdraw() {
 }
 
 function finishMove() {
-    // Dummy function to rule the world
+    let message = {
+        "type": "EndTurn",
+        "message": ""
+    };
+    websocket.send(JSON.stringify(message));
 }
 
 function landClick(clickedLand) {
     let message = {
         "type": "Click",
         "message": clickedLand
+    };
+    websocket.send(JSON.stringify(message));
+}
+
+function playerConqueredCountrySocket(troops) {
+    let message = {
+        "type": "MoveTroops",
+        "message": troops
     };
     websocket.send(JSON.stringify(message));
 }
@@ -66,6 +81,17 @@ function playerAttacking(message) {
     logging.push("attacking player: " + message.value);
 }
 
+function playerConqueredCountryMove() {
+    barElement1.message = "";
+    barElement2.message = "Verschieben";
+    barElement3.message = "";
+}
+
+function hideStatusElements() {
+    dices.hide();
+    conquered_country.hide();
+}
+
 function websocketMessages(data) {
     let message = JSON.parse(data);
     if (AllowedMessages.indexOf(message.type) === -1) {
@@ -83,13 +109,23 @@ function websocketMessages(data) {
             map_draw();
             break;
         case "SpreadTroops":
+			// Disable end turn
             spreadTroops(message);
             break;
         case "PlayerAttacking":
             playerAttacking(message);
             break;
         case "DicesRolled":
-            createDices($(".dices"), $("#dices-modal"), message.value.players, message.value.dices);
+            hideStatusElements();
+            createDices(dices, message.value.lands, message.value.dices);
+            break;
+        case "PlayerConqueredCountry":
+            hideStatusElements();
+            playerConqueredCountry(conquered_country, message.value, playerConqueredCountrySocket, hideStatusElements);
+            break;
+        case "ConqueredCountry":
+            hideStatusElements();
+            conqueredCountry(conquered_country, message.value);
             break;
         default:
             logging.push(message.type);
@@ -105,5 +141,7 @@ $(document).ready(function() {
     document.getElementById("withdrawButton").addEventListener("click", withdraw);
     document.getElementById("finishMoveButton").addEventListener("click", finishMove);
     _map_init($("#map")[0], landClick, 1650, 1080, 1);
+    dices = $(".dices");
+    conquered_country = $(".conquered_country");
     websocket = connectToWebsocket(websocketMessages);
 });
