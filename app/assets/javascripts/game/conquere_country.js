@@ -13,7 +13,7 @@ function playerConqueredCountry(conquered_country, troops, playerConqueredCountr
     $(label).text("Verfügbare Truppen:");
     $(conquered_country)[0].append(label);
     let select = document.createElement("select");
-    select.setAttribute("id", "troopsSelect")
+    select.setAttribute("id", "troopsSelect");
     select.className = "form-control";
     $(conquered_country)[0].append(select);
     for (let i = 1; i < troops; i++) {

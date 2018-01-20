@@ -27,28 +27,30 @@ case class Message(messageType: String, var message: String = "") {
     this.objectMap(key) = value
   }
 
-  def objectMessage(value: String) = {
+  def itemMessage(value: String) = {
     this.message = value
   }
 
   def toJson: String = {
     val messageTypeJson = "\"type\":\"" + messageType + "\""
-    var messageJson = "\"value\": " + message
+    val messageJson: StringBuilder = new StringBuilder
+    messageJson.append("\"value\": " + message)
     if ((this.valueMap.size > 0 || this.objectMap.size > 0) && this.message.length == 2) {
-      messageJson = "\"value\": {"
+      messageJson.setLength(0)
+      messageJson.append("\"value\": {")
       this.valueMap.foreach(value => {
-        messageJson += "\"" + value._1 + "\": "
-        messageJson += "\"" + value._2 + "\", "
+        messageJson.append("\"" + value._1 + "\": ")
+        messageJson.append("\"" + value._2 + "\", ")
       })
       this.objectMap.foreach(value => {
-        messageJson += "\"" + value._1 + "\": "
-        messageJson += value._2 + ", "
+        messageJson.append("\"" + value._1 + "\": ")
+        messageJson.append(value._2 + ", ")
       })
 
-      messageJson = messageJson.dropRight(2)
-      messageJson += "}"
+      messageJson.setLength(messageJson.length - 2)
+      messageJson.append("}")
     }
-    ("{" + messageTypeJson + ", " + messageJson + "}")
+    ("{" + messageTypeJson + ", " + messageJson.toString() + "}")
   }
 }
 
@@ -79,7 +81,7 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
 
     case models.MessageModels.UpdateMap(map) =>
       val message = Message("UpdateMap")
-      message.objectMessage(map)
+      message.itemMessage(map)
       out ! message.toJson
     case models.MessageModels.SpreadTroops(player, troops) =>
       val message = Message("SpreadTroops")

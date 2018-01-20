@@ -53,7 +53,7 @@ function playerConqueredCountrySocket(troops) {
     let message = {
         "type": "MoveTroops",
         "message": troops
-    }
+    };
     websocket.send(JSON.stringify(message));
 }
 
@@ -93,7 +93,6 @@ function hideStatusElements() {
 }
 
 function websocketMessages(data) {
-    console.log(data);
     let message = JSON.parse(data);
     if (AllowedMessages.indexOf(message.type) === -1) {
         return;
