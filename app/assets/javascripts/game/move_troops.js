@@ -54,7 +54,9 @@ function moveTroops(move_troops, move_troops_socket, resetMoveTroops) {
         let landFromName = $(landFrom).text();
         let landToName = $(landTo).text();
         if (landFrom === null || landTo === null ||
-            landFromName.length === 0 || landToName.length === 0) return;
+            landFromName.length === 0 || landToName.length === 0) {
+                return;
+            }
 
         move_troops_socket(landFromName, landToName, $(select).val());
     });
@@ -71,7 +73,9 @@ function moveTroops(move_troops, move_troops_socket, resetMoveTroops) {
 }
 
 function setFromLand(land, troops) {
-    if (landFrom === null || landTo === null || select === null) return;
+    if (landFrom === null || landTo === null || select === null) {
+        return;
+    }
     for (let i = 1; i < troops; i++) {
         let option = document.createElement("option");
         option.value = i;
