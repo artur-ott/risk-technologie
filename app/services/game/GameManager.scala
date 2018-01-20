@@ -13,7 +13,7 @@ import de.htwg.se.scala_risk.controller.GameLogic
 
 class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = ListBuffer()) extends Actor with TObserver {
   val playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer();
-  var attackingLand: String = "";
+  var actionLand: String = "";
   gameLogic.add(this)
 
   def receive = {
@@ -22,6 +22,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     case models.MessageModels.ClickedLand(uuid, land) => this.clickedLand(uuid, land)
     case models.MessageModels.MoveTroops(uuid, troops) => this.moveTroops(uuid, troops)
     case models.MessageModels.EndTurn(uuid) => this.endTurn(uuid)
+    case models.MessageModels.ResetTransfereTroops(uuid) => if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) this.actionLand = ""
+    case models.MessageModels.DragTroops(uuid, landFrom, landTo, troops) => this.dragTroops(uuid, (landFrom, landTo), troops)
     case _ => println("GameManager: Unknown Message!")
   }
 
@@ -92,11 +94,14 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def clickedLand(uuid: UUID, land: String) {
-    if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
-      gameLogic.getStatus match {
-        case Statuses.PLAYER_SPREAD_TROOPS => gameLogic.addTroops(land, 1)
-        case Statuses.PLAYER_ATTACK => this.attack(uuid, land)
-        case _ => println("Land (" + land + ") clicked by (" + uuid + ") in wrong status(" + gameLogic.getStatus + ")")
+    if (gameLogic.getStatus != Statuses.CREATE_GAME) {
+      if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase)) {
+        gameLogic.getStatus match {
+          case Statuses.PLAYER_SPREAD_TROOPS => gameLogic.addTroops(land, 1)
+          case Statuses.PLAYER_ATTACK => this.attack(uuid, land)
+          case Statuses.PLAYER_MOVE_TROOPS => this.selectMoveTroop(uuid, land)
+          case _ => println("Land (" + land + ") clicked by (" + uuid + ") in wrong status(" + gameLogic.getStatus + ")")
+        }
       }
     }
   }
@@ -117,8 +122,8 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   }
 
   def attack(uuid: UUID, land: String) = {
-    if (this.attackingLand.length == 0 && gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
-      this.attackingLand = land
+    if (this.actionLand.length == 0 && gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
+      this.actionLand = land
       this.getPlayerActorRef(uuid) match {
         case None =>
         case Some(player) => {
@@ -126,9 +131,9 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         }
       }
     }
-    if (this.attackingLand.length != 0 && !gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
-      val attackerLand = this.attackingLand;
-      this.attackingLand = ""
+    if (this.actionLand.length != 0 && !gameLogic.getOwnerName(land).equals(uuid.toString.toUpperCase)) {
+      val attackerLand = this.actionLand;
+      this.actionLand = ""
       gameLogic.attack(attackerLand, land)
     }
   }
@@ -169,6 +174,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       gameLogic.getStatus match {
         case Statuses.PLAYER_ATTACK => gameLogic.endTurn
         case Statuses.PLAYER_MOVE_TROOPS => gameLogic.endTurn
+        case _ =>
       }
     }
   }
@@ -179,8 +185,35 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     })
   }
 
-  def dragTroops(lands: (String, String), troops: Int) = {
-    //gameLogic.dragTroops(actionCountries(0)._1, actionCountries(1)._1, choiceAsInt)
+  def selectMoveTroop(uuid: UUID, land: String) = {
+    if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase) && gameLogic.getStatus == Statuses.PLAYER_MOVE_TROOPS) {
+      gameLogic.getCountries.foreach(landObject => {
+        if (landObject._1.equals(land) && uuid.toString().toUpperCase.equals(landObject._2.toUpperCase)) {
+          if (this.actionLand.length > 0) {
+            if (!this.actionLand.equals(land)) {
+              this.playerActorRefs.filter(p => p._1.toString().toUpperCase.equals(uuid.toString().toUpperCase)).foreach(
+                p => p._2 ! models.MessageModels.TransfereTroopsSetToLand(land)
+              )
+            }
+          } else {
+            this.actionLand = land
+            this.playerActorRefs.filter(p => p._1.toString().toUpperCase.equals(uuid.toString().toUpperCase)).foreach(
+              p => p._2 ! models.MessageModels.TransfereTroopsSetFromLand(this.actionLand, landObject._3)
+            )
+          }
+        }
+      })
+    }
+  }
+
+  def dragTroops(uuid: UUID, lands: (String, String), troops: Int) = {
+    if (uuid.toString().toUpperCase.equals(gameLogic.getCurrentPlayer._1.toUpperCase) && gameLogic.getStatus == Statuses.PLAYER_MOVE_TROOPS) {
+      gameLogic.dragTroops(lands._1, lands._2, troops)
+      this.playerActorRefs.foreach(playerActorRef => {
+        playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata(if (playerActorRef._1.toString.toUpperCase.equals(uuid.toString().toUpperCase)) 2 else 1))
+      })
+      this.actionLand = ""
+    }
   }
 
   def getMapdata(recoloring: Int = 1, own: Boolean = false): String = {

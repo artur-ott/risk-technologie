@@ -9,7 +9,7 @@ import scala.collection.mutable.HashMap
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, PlayerConqueredCountry, ConqueredCountry, EndTurn, TransfereTroops, UpdateMap, Close, Click, MoveTroops, Unknown = Value
+  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, PlayerConqueredCountry, ConqueredCountry, EndTurn, TransfereTroops, ResetTransfereTroops, TransfereTroopsSetFromLand, TransfereTroopsSetToLand, UpdateMap, Close, Click, MoveTroops, Unknown = Value
 
   def stringToValue(messageType: String): Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
@@ -19,12 +19,12 @@ case class Message(messageType: String, var message: String = "") {
   private[this] val objectMap: HashMap[String, String] = new HashMap[String, String]
   message = "\"" + message + "\""
 
-  def addValue(key: String, value: String) = {
-    this.valueMap(key) = value
+  def addValue(key: String, value: Any) = {
+    this.valueMap(key) = value.toString
   }
 
-  def addObject(key: String, value: String) = {
-    this.objectMap(key) = value
+  def addObject(key: String, value: Any) = {
+    this.objectMap(key) = value.toString
   }
 
   def messageObject(value: String) = {
@@ -72,6 +72,12 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
             case MessageTypes.StartGame => gameManager ! models.MessageModels.StartGame
             case MessageTypes.Click => gameManager ! models.MessageModels.ClickedLand(uuid, (json \ "message").asOpt[String].getOrElse(""))
             case MessageTypes.MoveTroops => gameManager ! models.MessageModels.MoveTroops(uuid, (json \ "message").asOpt[Int].getOrElse(1))
+            case MessageTypes.TransfereTroops =>
+              val landFrom = (json \ "message" \ "landFrom").asOpt[String].getOrElse("")
+              val landTo = (json \ "message" \ "landTo").asOpt[String].getOrElse("")
+              val troops = (json \ "message" \ "troops").asOpt[Int].getOrElse(1)
+              gameManager ! models.MessageModels.DragTroops(uuid, landFrom, landTo, troops)
+            case MessageTypes.ResetTransfereTroops => gameManager ! models.MessageModels.ResetTransfereTroops(uuid)
             case MessageTypes.EndTurn => gameManager ! models.MessageModels.EndTurn(uuid)
             case _ => println("Wrong message type: " + messageTypeValue)
           }
@@ -97,6 +103,12 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
     case models.MessageModels.PlayerConqueredCountry(troops) => out ! Message("PlayerConqueredCountry", troops.toString).toJson
     case models.MessageModels.ConqueredCountry(land) => out ! Message("ConqueredCountry", land).toJson
     case models.MessageModels.TransfereTroops(player) => out ! Message("TransfereTroops", player.toString).toJson
+    case models.MessageModels.TransfereTroopsSetFromLand(land, troops) =>
+      val message = Message("TransfereTroopsSetFromLand")
+      message.addValue("land", land)
+      message.addValue("troops", troops)
+      out ! message.toJson
+    case models.MessageModels.TransfereTroopsSetToLand(land) => out ! Message("TransfereTroopsSetToLand", land).toJson
     case unknown: Any => println("Player: " + unknown.getClass.toString)
   }
 
