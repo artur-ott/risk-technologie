@@ -57,9 +57,9 @@ function moveTroopsSocket(landFrom, landTo, troops) {
     let message = {
         "type": "TransfereTroops",
         "message": {
-            "landFrom": landFrom,
-            "landTo": landTo,
-            "troops": troops
+            landFrom,
+            landTo,
+            troops
         }
     };
     websocket.send(JSON.stringify(message));
