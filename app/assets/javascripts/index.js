@@ -1,7 +1,7 @@
 $(document).ready(function () {
     $("#game_name").keyup(activateGame);
-    $("#game_name").select(activateGame);
-    $("#games").change(activateGame)
+    $("#game_name").on('propertychange input', activateGame);
+    $("#games").change(activateGame);
 });
 
 function activateGame(e) {
