@@ -1,6 +1,6 @@
 $(document).ready(function () {
     $("#game_name").keyup(activateGame);
-    $("#game_name").on('propertychange input', activateGame);
+    $("#game_name").on("propertychange input", activateGame);
     $("#games").change(activateGame);
 });
 

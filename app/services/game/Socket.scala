@@ -27,7 +27,7 @@ case class Message(messageType: String, var message: String = "") {
     this.objectMap(key) = value
   }
 
-  def itemMessage(value: String) = {
+  def messageObject(value: String) = {
     this.message = value
   }
 
@@ -81,7 +81,7 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
 
     case models.MessageModels.UpdateMap(map) =>
       val message = Message("UpdateMap")
-      message.itemMessage(map)
+      message.messageObject(map)
       out ! message.toJson
     case models.MessageModels.SpreadTroops(player, troops) =>
       val message = Message("SpreadTroops")
