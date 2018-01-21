@@ -59,7 +59,7 @@ function moveTroopsSocket(landFrom, landTo, troops) {
         "message": {
             landFrom,
             landTo,
-            troops
+            "troops": parseInt(troops)
         }
     };
     websocket.send(JSON.stringify(message));

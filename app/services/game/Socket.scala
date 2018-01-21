@@ -76,7 +76,6 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
               val landFrom = (json \ "message" \ "landFrom").asOpt[String].getOrElse("")
               val landTo = (json \ "message" \ "landTo").asOpt[String].getOrElse("")
               val troops = (json \ "message" \ "troops").asOpt[Int].getOrElse(1)
-              println((json \ "message" \ "troops"));
               gameManager ! models.MessageModels.DragTroops(uuid, landFrom, landTo, troops)
             case MessageTypes.ResetTransfereTroops => gameManager ! models.MessageModels.ResetTransfereTroops(uuid)
             case MessageTypes.EndTurn => gameManager ! models.MessageModels.EndTurn(uuid)
