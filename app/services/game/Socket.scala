@@ -9,7 +9,7 @@ import scala.collection.mutable.HashMap
 
 object MessageTypes extends Enumeration {
   type MessageTypes = Value
-  val MessageTypeList, Ping, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, PlayerConqueredCountry, ConqueredCountry, EndTurn, TransfereTroops, ResetTransfereTroops, TransfereTroopsSetFromLand, TransfereTroopsSetToLand, UpdateMap, Close, Click, MoveTroops, Unknown = Value
+  val MessageTypeList, Ping, SignIn, PlayerList, StartGame, SpreadTroops, PlayerAttacking, PlayerAttackingContinue, DicesRolled, PlayerConqueredCountry, ConqueredCountry, EndTurn, TransfereTroops, ResetTransfereTroops, TransfereTroopsSetFromLand, TransfereTroopsSetToLand, UpdateMap, Close, Click, MoveTroops, Unknown = Value
 
   def stringToValue(messageType: String): Option[MessageTypes] = values.find(_.toString.equals(messageType))
 }
@@ -69,7 +69,7 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
           case None => println("No type: " + msg + ", " + MessageTypes.stringToValue(msg))
           case Some(messageTypeValue) => messageTypeValue match {
             case MessageTypes.Ping => out ! Message("Ping").toJson
-            case MessageTypes.StartGame => gameManager ! models.MessageModels.StartGame
+            case MessageTypes.StartGame => gameManager ! models.MessageModels.StartGame(uuid)
             case MessageTypes.Click => gameManager ! models.MessageModels.ClickedLand(uuid, (json \ "message").asOpt[String].getOrElse(""))
             case MessageTypes.MoveTroops => gameManager ! models.MessageModels.MoveTroops(uuid, (json \ "message").asOpt[Int].getOrElse(1))
             case MessageTypes.TransfereTroops =>
@@ -85,6 +85,21 @@ class SocketActor(out: ActorRef, gameManager: ActorRef, uuid: UUID) extends Acto
       }
     }
 
+    case models.MessageModels.PlayerList(list) =>
+      val message = Message("PlayerList")
+      val messageArray: StringBuilder = new StringBuilder
+      messageArray.append("[");
+      list.foreach(player => {
+        messageArray.append("[\"");
+        messageArray.append(player._1);
+        messageArray.append("\", \"");
+        messageArray.append(player._2);
+        messageArray.append("\"], ");
+      })
+      messageArray.setLength(messageArray.length - 2)
+      messageArray.append("]");
+      message.messageObject(messageArray.toString)
+      out ! message.toJson
     case models.MessageModels.UpdateMap(map) =>
       val message = Message("UpdateMap")
       message.messageObject(map)
