@@ -24,6 +24,7 @@ GET         /account/activate/:token         controllers.account.ActivateAccount
 
 # Game
 GET         /                                controllers.game.GameController.index
+GET         /gameList                        controllers.game.GameController.gameList
 POST        /startGame                       controllers.game.GameController.start
 GET         /game                            controllers.game.GameController.game
 GET         /game/socket                     controllers.game.GameController.socket

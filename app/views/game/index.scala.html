@@ -7,7 +7,7 @@
 @import play.api.i18n.Messages
 @import play.twirl.api.Html
 
-@(user: models.User, gameModels: List[GameModel])(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+@(user: models.User)(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 
 
 @additionalJs = {
@@ -25,11 +25,7 @@
                 </div>
                 <div class="form-group">
                     <label for="games">Spiele</label>
-                    <select multiple class="form-control" name="game_selected" id="games" @if(gameModels.length == 0){disabled}>
-                        <option></option>
-                        @for(gameModel <- gameModels) {
-                            <option value="@gameModel.id">@gameModel.id</option>
-                        }
+                    <select multiple class="form-control" name="game_selected" id="games" url="@controllers.game.routes.GameController.gameList" disabled>
                     </select>
                   </div>
                 <button type="submit" id="play_game" class="btn btn-primary" disabled>Spielen</button>

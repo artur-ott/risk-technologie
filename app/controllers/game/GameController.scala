@@ -37,7 +37,16 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
    */
 
   def index = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-    Future.successful(Ok(views.html.game.index(request.identity, GamesShared.getGames)))
+    Future.successful(Ok(views.html.game.index(request.identity)))
+  }
+
+  def gameList = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    val games = GamesShared.getGames.filter(game => !game.gameStarted).map { game => game.id }
+    if (games.size > 0) {
+      Future.successful(Ok("[\"" + games.mkString("\", \"") + "\"]"))
+    } else {
+      Future.successful(Ok("[]"))
+    }
   }
 
   def start = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
@@ -69,7 +78,7 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
       playerList += PlayerModel(user.userID, playerName)
       val world = new ImplWorld()
       GamesShared.addGame(GameModel(gameName, playerList,
-        Some(actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), name = gameName.replaceAll("\\s", "")))
+        Some(actorSystem.actorOf(Props(new GameManager(gameName, new ImplGameLogic(world), playerList)), name = gameName.replaceAll("\\s", "")))
       ))
 
       println(playerName + " hat ein Spiel gestartet")

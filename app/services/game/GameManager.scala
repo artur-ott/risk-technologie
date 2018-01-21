@@ -10,14 +10,12 @@ import models.PlayerModel
 import de.htwg.se.scala_risk.util.observer.TObserver
 import de.htwg.se.scala_risk.util.Statuses
 import de.htwg.se.scala_risk.controller.GameLogic
+import models.shared.GamesShared
 
-class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = ListBuffer()) extends Actor with TObserver {
+class GameManager(id: String, gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = ListBuffer()) extends Actor with TObserver {
   val playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer()
   var actionLand: String = ""
-  var gameStarted: Boolean = false
   gameLogic.add(this)
-
-  def startedGame: Boolean = this.gameStarted;
 
   def receive = {
     case models.MessageModels.SetPlayer(prop, uuid) => this.createPlayer(prop, uuid)
@@ -78,7 +76,11 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
       }
       player.startedGame
     }.contains(false) && this.playerActorRefs.size > 1) {
-      this.gameStarted = true
+      GamesShared.getGames.foreach(game => {
+        if (game.id.equals(this.id)) {
+          game.gameStarted = true
+        }
+      })
       gameLogic.startGame
     }
   }
