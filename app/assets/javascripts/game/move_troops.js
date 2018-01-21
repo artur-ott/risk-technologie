@@ -86,7 +86,9 @@ function setFromLand(land, troops) {
 }
 
 function setToLand(land) {
-    if (landFrom === null || landTo === null || select === null) return;
+    if (landFrom === null || landTo === null || select === null) {
+        return;
+    }
     $(landTo).text(land);
     select.removeAttribute("disabled");
     button.removeAttribute("disabled");
