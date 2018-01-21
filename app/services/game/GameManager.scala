@@ -17,7 +17,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
   var gameStarted: Boolean = false
   gameLogic.add(this)
 
-  def startedGame: Boolean = return this.gameStarted;
+  def startedGame: Boolean = this.gameStarted;
 
   def receive = {
     case models.MessageModels.SetPlayer(prop, uuid) => this.createPlayer(prop, uuid)

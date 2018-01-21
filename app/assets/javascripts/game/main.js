@@ -137,13 +137,14 @@ function websocketMessages(data) {
             userTable.appendChild(userTbody);
             let users = Array.from(message.value);
             for (let i = 0; i < users.length; i++) {
+                let user = users[i];
                 let userTr = document.createElement("tr");
                 userTbody.appendChild(userTr);
                 let userColor = document.createElement("td");
-                userColor.className = "playerColor mr- " + users[i][1];
+                userColor.className = "playerColor mr- " + user[1];
                 userTr.appendChild(userColor);
                 let userName = document.createElement("td");
-                $(userName).text(users[i][0]);
+                $(userName).text(user[0]);
                 userTr.appendChild(userName);
             }
             break;
