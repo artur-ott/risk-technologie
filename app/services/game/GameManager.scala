@@ -18,7 +18,7 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
 
   def receive = {
     case models.MessageModels.SetPlayer(prop, uuid) => this.createPlayer(prop, uuid)
-    case models.MessageModels.StartGame => this.startGame
+    case models.MessageModels.StartGame(uuid) => this.startGame(uuid)
     case models.MessageModels.ClickedLand(uuid, land) => this.clickedLand(uuid, land)
     case models.MessageModels.MoveTroops(uuid, troops) => this.moveTroops(uuid, troops)
     case models.MessageModels.EndTurn(uuid) => this.endTurn(uuid)
@@ -55,6 +55,10 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         playerActorRefs += ((uuid, playerRef))
       }
     }
+    val playersNameColor = players.map { player => (player.name, player.color) }
+    playerActorRefs.foreach(player => {
+      player._2 ! models.MessageModels.PlayerList(playersNameColor.toList)
+    })
   }
 
   def currentPlayerName: String = {
@@ -64,7 +68,14 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
     }
   }
 
-  def startGame() = if (this.playerActorRefs.length >= 2) gameLogic.startGame
+  def startGame(uuid: UUID) = {
+    if (!this.players.map { player =>
+      if (player.uuid.toString().toUpperCase.equals(uuid.toString().toUpperCase)) {
+        player.startedGame = true;
+      }
+      player.startedGame
+    }.contains(false) && this.playerActorRefs.size > 1) gameLogic.startGame
+  }
 
   def getPlayerActorRef(uuid: UUID): Option[(UUID, ActorRef)] = {
     this.getPlayerActorRef(uuid.toString)
@@ -81,15 +92,19 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         case None =>
         case Some(color) => players.lift(6 - gameLogic.getAvailableColors.size) match {
           case None =>
-          case Some(player) => gameLogic.setPlayer((player.uuid.toString, color))
+          case Some(player) =>
+            player.color = color
+            gameLogic.setPlayer((player.uuid.toString, color))
         }
       }
     }
   }
 
   def gameInitialized() = {
+    val playersNameColor = players.map { player => (player.name, player.color) }
     this.playerActorRefs.foreach(playerActorRef => {
       playerActorRef._2 ! models.MessageModels.UpdateMap(getMapdata())
+      playerActorRef._2 ! models.MessageModels.PlayerList(playersNameColor.toList)
     })
   }
 

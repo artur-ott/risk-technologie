@@ -5,6 +5,7 @@ import java.util.UUID
 
 object MessageModels {
   case class SetPlayer(playerRef: ActorRef, uuid: UUID)
+  case class PlayerList(playerList: List[(String, String)])
   case class UpdateMap(map: String)
   case class SpreadTroops(player: String, troops: Int)
   case class PlayerAttack(player: String)
@@ -15,7 +16,7 @@ object MessageModels {
   case class TransfereTroopsSetFromLand(land: String, troops: Int)
   case class TransfereTroopsSetToLand(land: String)
 
-  case class StartGame()
+  case class StartGame(uuid: UUID)
   case class ClickedLand(uuid: UUID, land: String)
   case class MoveTroops(uuid: UUID, troops: Int)
   case class EndTurn(uuid: UUID)

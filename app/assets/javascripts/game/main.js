@@ -1,9 +1,11 @@
 let websocket;
 let AllowedMessages = ["MessageTypeList"];
 let websocketInterval;
+let user_list;
 let dices;
 let conquered_country;
 let move_troops;
+let start_game;
 
 function mouseoverPicture() {
     // Add nice hover hover function here
@@ -31,6 +33,18 @@ function closeGame() {
 
 function withdraw() {
     // Insert function here
+}
+
+function hideStatusElements() {
+    start_game.hide();
+    dices.hide();
+    conquered_country.hide();
+    move_troops.hide();
+}
+
+function startGame(e) {
+    hideStatusElements();
+    websocket.send("{\"type\": \"StartGame\"}");
 }
 
 function finishMove() {
@@ -69,8 +83,7 @@ function resetMoveTroops() {
     websocket.send("{\"type\": \"ResetTransfereTroops\"}");
 }
 
-function startGame() {
-    websocket.send("{\"type\": \"StartGame\"}");
+function keepAlive() {
     clearInterval(websocketInterval);
     websocketInterval = setInterval(function(){
         if (websocket.readyState === websocket.OPEN) {  
@@ -99,12 +112,6 @@ function playerConqueredCountryMove() {
     barElement3.message = "";
 }
 
-function hideStatusElements() {
-    dices.hide();
-    conquered_country.hide();
-    move_troops.hide();
-}
-
 function websocketMessages(data) {
     let message = JSON.parse(data);
     if (AllowedMessages.indexOf(message.type) === -1) {
@@ -113,13 +120,32 @@ function websocketMessages(data) {
     switch (message.type) {
         case "MessageTypeList":
             AllowedMessages = message.value;
-            startGame();
+            keepAlive();
             break;
         case "Ping":
             break;
         case "UpdateMap":
             map_data = message.value;
             map_draw();
+            break;
+        case "PlayerList":
+            $(user_list).html("");
+            let userTable = document.createElement("table");
+            userTable.className = "halfFontSize";
+            $(user_list)[0].appendChild(userTable);
+            let userTbody = document.createElement("tbody");
+            userTable.appendChild(userTbody);
+            let users = Array.from(message.value);
+            for (let i = 0; i < users.length; i++) {
+                let userTr = document.createElement("tr");
+                userTbody.appendChild(userTr);
+                let userColor = document.createElement("td");
+                userColor.className = "playerColor mr- " + users[i][1];
+                userTr.appendChild(userColor);
+                let userName = document.createElement("td");
+                $(userName).text(users[i][0]);
+                userTr.appendChild(userName);
+            }
             break;
         case "SpreadTroops":
             hideStatusElements();
@@ -166,8 +192,11 @@ $(document).ready(function() {
     $("#withdrawButton").click(withdraw);
     $("#finishMoveButton").click(finishMove);
     _map_init($("#map")[0], landClick, 1650, 1080, 1);
+    user_list = $(".user_list");
     dices = $(".dices");
     conquered_country = $(".conquered_country");
     move_troops = $(".move_troops");
+    start_game = $(".start_game");
     websocket = connectToWebsocket(websocketMessages);
+    $(".start_game button").click(startGame);
 });

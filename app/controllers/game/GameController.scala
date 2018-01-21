@@ -128,7 +128,9 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
             game.gameManager match {
               case None => Props.empty
               case Some(gameManager) => {
-                println("Socket connection created: " + user.email.getOrElse(""))
+                val email = user.email.getOrElse("")
+                val playerName = if (email.length > 0) email else user.name.getOrElse("")
+                println("Socket connection created: " + playerName)
                 Props(new GameSocketActor(out, gameManager, user.userID))
               }
             }
