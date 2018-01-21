@@ -12,9 +12,12 @@ import de.htwg.se.scala_risk.util.Statuses
 import de.htwg.se.scala_risk.controller.GameLogic
 
 class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = ListBuffer()) extends Actor with TObserver {
-  val playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer();
-  var actionLand: String = "";
+  val playerActorRefs: ListBuffer[(UUID, ActorRef)] = ListBuffer()
+  var actionLand: String = ""
+  var gameStarted: Boolean = false
   gameLogic.add(this)
+
+  def startedGame: Boolean = return this.gameStarted;
 
   def receive = {
     case models.MessageModels.SetPlayer(prop, uuid) => this.createPlayer(prop, uuid)
@@ -74,7 +77,10 @@ class GameManager(gameLogic: GameLogic, var players: ListBuffer[PlayerModel] = L
         player.startedGame = true;
       }
       player.startedGame
-    }.contains(false) && this.playerActorRefs.size > 1) gameLogic.startGame
+    }.contains(false) && this.playerActorRefs.size > 1) {
+      this.gameStarted = true
+      gameLogic.startGame
+    }
   }
 
   def getPlayerActorRef(uuid: UUID): Option[(UUID, ActorRef)] = {
