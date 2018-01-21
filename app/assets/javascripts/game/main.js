@@ -158,13 +158,13 @@ function websocketMessages(data) {
 }
 
 $(document).ready(function() {
-    document.getElementById("dropdownLoad").addEventListener("click", loadGame);
-    document.getElementById("dropdownSave").addEventListener("click", saveGame);
-    document.getElementById("dropdownShow").addEventListener("click", showContinents);
-    document.getElementById("dropdownContinue").addEventListener("click", continueGame);
-    document.getElementById("dropdownClose").addEventListener("click", closeGame);
-    document.getElementById("withdrawButton").addEventListener("click", withdraw);
-    document.getElementById("finishMoveButton").addEventListener("click", finishMove);
+    $("#dropdownLoad").click(loadGame);
+    $("#dropdownSave").click(saveGame);
+    $("#dropdownShow").click(showContinents);
+    $("#dropdownContinue").click(continueGame);
+    $("#dropdownClose").click(closeGame);
+    $("#withdrawButton").click(withdraw);
+    $("#finishMoveButton").click(finishMove);
     _map_init($("#map")[0], landClick, 1650, 1080, 1);
     dices = $(".dices");
     conquered_country = $(".conquered_country");
