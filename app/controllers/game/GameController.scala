@@ -37,7 +37,16 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
    */
 
   def index = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-    Future.successful(Ok(views.html.game.index(request.identity, GamesShared.getGames)))
+    Future.successful(Ok(views.html.game.index(request.identity)))
+  }
+
+  def gameList = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
+    val games = GamesShared.getGames.filter(game => !game.gameStarted).map { game => game.id }
+    if (games.size > 0) {
+      Future.successful(Ok("[\"" + games.mkString("\", \"") + "\"]"))
+    } else {
+      Future.successful(Ok("[]"))
+    }
   }
 
   def start = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
@@ -64,13 +73,15 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
     if (gameName.equals("-1") || gameName.length == 0) BadRequest("")
     else {
       val playerList = ListBuffer[PlayerModel]()
-      playerList += PlayerModel(user.userID, user.email.getOrElse(""))
+      val email = user.email.getOrElse("")
+      val playerName = if (email.length > 0) email else user.name.getOrElse("")
+      playerList += PlayerModel(user.userID, playerName)
       val world = new ImplWorld()
       GamesShared.addGame(GameModel(gameName, playerList,
-        Some(actorSystem.actorOf(Props(new GameManager(new ImplGameLogic(world), playerList)), name = gameName.replaceAll("\\s", "")))
+        Some(actorSystem.actorOf(Props(new GameManager(gameName, new ImplGameLogic(world), playerList)), name = gameName.replaceAll("\\s", "")))
       ))
 
-      println(user.email.getOrElse("") + " hat ein Spiel gestartet")
+      println(playerName + " hat ein Spiel gestartet")
 
       Redirect(routes.GameController.game(), 302)
     }
@@ -84,10 +95,12 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
         // No game found
         case None => BadRequest("")
         case Some(gameModel) => {
-          gameModel.player += PlayerModel(user.userID, user.email.getOrElse(""))
+          val email = user.email.getOrElse("")
+          val playerName = if (email.length > 0) email else user.name.getOrElse("")
+          gameModel.player += PlayerModel(user.userID, playerName)
 
           println(GamesShared.getGames.toString)
-          println(user.email.getOrElse("") + " ist dem Spiel "
+          println(playerName + " ist dem Spiel "
             + gameSelected + " beigetreten")
           Redirect(routes.GameController.game(), 302)
         }
@@ -96,7 +109,7 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
   }
 
   def game = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-    Future.successful(Ok(views.html.game.game()))
+    Future.successful(Ok(views.html.game.game(request.identity)))
   }
 
   def description = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
@@ -124,7 +137,9 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
             game.gameManager match {
               case None => Props.empty
               case Some(gameManager) => {
-                println("Socket connection created: " + user.email.getOrElse(""))
+                val email = user.email.getOrElse("")
+                val playerName = if (email.length > 0) email else user.name.getOrElse("")
+                println("Socket connection created: " + playerName)
                 Props(new GameSocketActor(out, gameManager, user.userID))
               }
             }

@@ -20,7 +20,9 @@
         @Html(webJarsUtil.script("bootstrap.min.js"))
         @Html(webJarsUtil.css("bootstrap.min.css"))
         @Html(webJarsUtil.css("bootstrap-theme.min.css"))
-        <link rel="stylesheet" href="@assets.path("stylesheets/game.css")">
+        @Html(webJarsUtil.script("jquery.min.js"))
+        @Html(webJarsUtil.script("vue.min.js"))
+        <script src="@assets.path("javascripts/main.js")"></script>
         <link rel="stylesheet" href="@assets.path("stylesheets/main.css")">
         @additionalCss
         @additionalJs
