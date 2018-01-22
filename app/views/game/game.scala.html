@@ -6,7 +6,7 @@
 @import controllers.AssetsFinder
 @import play.api.i18n.Messages
 
-@(user: models.User)(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
+@(user: models.User, websocket: String)(implicit request: RequestHeader, messages: Messages, webJarsUtil: WebJarsUtil, assets: AssetsFinder)
 
 @additionalCss = {
     <link rel="stylesheet" type="text/css" href="@assets.path("stylesheets/game.css")">
@@ -23,6 +23,7 @@
 }
 
 @main("Risk Technologie- The Game!", Some(user), additionalCss, additionalJs) {
+    <div id="websocket" class="hide">@websocket</div>
     <!-- if browser is firefox gfx.color_management.mode needs to be 0 -->
     <nav class="navbar navbar-expand navbar-light bg-light">
         <div id="message-1">
