@@ -3,6 +3,7 @@ package controllers.game
 import controllers._
 
 import javax.inject._
+import play.api.Configuration
 import play.api.mvc._
 import org.webjars.play.WebJarsUtil
 import play.api.i18n.{ I18nSupport, Messages }
@@ -26,7 +27,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 /**
  */
 @Singleton
-class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(implicit system: ActorSystem, mat: Materializer, webJarsUtil: WebJarsUtil, assets: AssetsFinder) extends AbstractController(cc) with I18nSupport {
+class GameController @Inject() (config: Configuration, cc: ControllerComponents, silhouette: Silhouette[DefaultEnv])(implicit system: ActorSystem, mat: Materializer, webJarsUtil: WebJarsUtil, assets: AssetsFinder) extends AbstractController(cc) with I18nSupport {
 
   val actorSystem = ActorSystem("Risiko")
 
@@ -109,7 +110,7 @@ class GameController @Inject() (cc: ControllerComponents, silhouette: Silhouette
   }
 
   def game = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>
-    Future.successful(Ok(views.html.game.game(request.identity)))
+    Future.successful(Ok(views.html.game.game(request.identity, config.get[String]("websocket.url"))))
   }
 
   def description = silhouette.SecuredAction.async { implicit request: SecuredRequest[DefaultEnv, AnyContent] =>

@@ -1,8 +1,7 @@
 let logging = [];
 
 function connectToWebsocket(receiveMethod) {
-    // let websocket = new WebSocket("ws://192.168.0.24:9000/game/socket");
-    let websocket = new WebSocket("ws://localhost:9000/game/socket");
+    let websocket = new WebSocket($("#websocket").text());
     websocket.setTimeout;
     websocketInitEvents(websocket, receiveMethod);
     return websocket;
